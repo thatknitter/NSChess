@@ -42,17 +42,21 @@ function Game(){
     //the highlighting for. 
     this.selected = cell;
 
+
     switch(piece.name.split('-')[1]){
       case 'p':
         pawn();
         break;
       case 'r':
+        rbq([[0,1],[0,-1],[1,0],[-1,0]]);
         break;
       case 'kn':
         break;
       case 'b':
+        rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
         break;
       case 'q':
+        rbq([[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]);
         break;
       case 'k':
         break;
@@ -61,7 +65,7 @@ function Game(){
     function pawn(){
       //moving straight forward
       //able to move twice if it is the first move
-      if (grid[y+direction])
+      if (grid[y+direction]){
         highlight(grid[y+direction][x]);
         if(!piece.moved&&grid[y+direction*2]){ 
           highlight(grid[y+direction*2][x]);
@@ -70,14 +74,36 @@ function Game(){
         var nextRow = grid[y+direction];
         if (nextRow[x+1]) highlight(nextRow[x+1]);
         if (nextRow[x-1]) highlight(nextRow[x-1]);
+      }
+    }
+
+    function rbq(directions){
+      var direction;
+      for (i = 0; i < directions.length; i++) {
+        direction = directions[i];
+        while(grid[y+direction[0]]&&
+              highlight(grid[y+direction[0]][x+direction[1]])
+             ){
+
+          direction[0] += directions[i][0];
+          direction[1] += directions[i][1];
+        }
+      }
     }
 
     //highlight checks if a piece can move to a cell, if so
-    //it highlights it.
+    //it highlights it. returns false if it hits a piece or 
+    //the space oes not exist.
     function highlight(cell, diagonalPawn){
-      if (!diagonalPawn && (!cell.piece||(cell.piece.player!=player))){
-        cell.highlight = true;
-        return true;
+      if (!diagonalPawn){
+        if (!cell.piece){
+          cell.highlight = true;
+          return true;
+        }
+        else if(cell.piece.player!=player){
+          cell.highlight = true;
+          return false;
+        }
       }
       else if(diagonalPawn&&cell.piece&&cell.piece.player != player){
           cell.highlight = true;
