@@ -33,6 +33,58 @@ function Game(){
   this.calcMoves = function(x,y){
     //calculates the possible moves for a selected piece,
     //sets highlight to true on possible cells.
+    var grid = this.grid, 
+        cell = grid[y][x],
+        player = this.player,
+        direction = this.player ? -1 : 1;
+        piece = cell.piece;
+    //set the selected piece to the one we are doing 
+    //the highlighting for. 
+    this.selected = cell;
+
+    switch(piece.name.split('-')[1]){
+      case 'p':
+        pawn();
+        break;
+      case 'r':
+        break;
+      case 'kn':
+        break;
+      case 'b':
+        break;
+      case 'q':
+        break;
+      case 'k':
+        break;
+    }
+
+    function pawn(){
+      //moving straight forward
+      //able to move twice if it is the first move
+      if (grid[y+direction])
+        highlight(grid[y+direction][x]);
+        if(!piece.moved&&grid[y+direction*2]){ 
+          highlight(grid[y+direction*2][x]);
+        }
+        //Handle sideways attacking
+        var nextRow = grid[y+direction];
+        if (nextRow[x+1]) highlight(nextRow[x+1]);
+        if (nextRow[x-1]) highlight(nextRow[x-1]);
+    }
+
+    //highlight checks if a piece can move to a cell, if so
+    //it highlights it.
+    function highlight(cell, diagonalPawn){
+      if (!diagonalPawn && (!cell.piece||(cell.piece.player!=player))){
+        cell.highlight = true;
+        return true;
+      }
+      else if(diagonalPawn&&cell.piece&&cell.piece.player != player){
+          cell.highlight = true;
+          return true;
+      }
+      else return false;
+    }
   };
 
   this.processMove = function(x,y){
@@ -115,6 +167,7 @@ function Piece(name){
 	
   this.name = name;
   this.moved = false;
+  this.player = this.name.split('-')[0] === 1 ? true : false;
 
   return this;
 }
