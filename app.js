@@ -72,9 +72,47 @@ function Cell(x,y,piece){
 }
 
 function Piece(name){
-  //@name: name of the piece : string
+  /*@name: name of the piece : string
   //@moved: if the piece has ever been moved : boolean
   //@player: the owner of the piece, true or false : boolean
+	//naming of pieces:
+	//
+	//Player 1 Pieces--
+	//1-p-1		pawn 1
+	//1-p-2		pawn 2
+	//1-p-3		pawn 3
+	//1-p-4		pawn 4
+	//1-p-5		pawn 5
+	//1-p-6		pawn 6
+	//1-p-7		pawn 7
+	//1-p-8		pawn 8
+	//1-r-1		rook, left
+	//1-kn-1	knight, left
+	//1-b-1		bishop, left
+	//1-k			king
+	//1-q			queen
+	//1-b-2		bishop, right
+	//1-kn-2	knight, right
+	//1-r-1		rook, right
+	//
+	//Player 2 Pieces--
+	//2-p-1		pawn 1
+	//2-p-2		pawn 2
+	//2-p-3		pawn 3
+	//2-p-4		pawn 4
+	//2-p-5		pawn 5
+	//2-p-6		pawn 6
+	//2-p-7		pawn 7
+	//2-p-8		pawn 8
+	//2-r-1		rook, left
+	//2-kn-1	knight, left
+	//2-b-1		bishop, left
+	//2-k			king
+	//2-q			queen
+	//2-b-2		bishop, right
+	//2-kn-2	knight, right
+	//2-r-1		rook, right*/
+	
   this.name = name;
   this.moved = false;
 
