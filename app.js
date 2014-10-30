@@ -127,11 +127,106 @@ function Game(){
   function startingPiece(x,y){
     //returns a Piece if a piece is on the board at
     //the start of a game for a given x:y coordinate
-    return new Piece();
-  }
-
-  return this;
-}
+    // example: return new Piece(1-p-1);
+    
+    
+    if (x === 0 && y === 0) {               // Light side Royal Family
+      // White left Rook
+      return ("1-r-1");
+    } else if (x === 0 && y === 1) {
+      // White left Knight
+      return ("1-kn-1");
+    } else if (x === 0 && y === 2) {
+      // White left Bishop
+      return ("1-b-1");
+    } else if (x === 0 && y === 3) {
+      // White Queen
+      return ("1-q");
+    } else if (x === 0 && y === 4) {
+      // White King
+      return ("1-k");
+    } else if (x === 0 && y === 5) {
+      // White right Bishop
+      return ("1-b-2");
+    } else if (x === 0 && y === 6) {
+      // White right Knight
+      return ("1-kn-2");
+    } else if (x === 0 && y === 7) {
+      // White right Rook
+      return ("1-r-2");
+    } else if (x === 1 && y === 0) {        // Light side Pawns
+      // Pawn 1
+      return ("1-p-1");
+    } else if (x === 1 && y === 1) {
+      // Pawn 2
+      return ("1-p-2");
+    } else if (x === 1 && y === 2) {
+      // Pawn 3
+      return ("1-p-3");
+    } else if (x === 1 && y === 3) {
+      // Pawn 4
+      return ("1-p-4");
+    } else if (x === 1 && y === 4) {
+      // Pawn 5
+      return ("1-p-5");
+    } else if (x === 1 && y === 5) {
+      // Pawn 6
+      return ("1-p-6");
+    } else if (x === 1 && y === 6) {
+      // Pawn 7
+      return ("1-p-7");
+    } else if (x === 1 && y === 7) {
+      // Pawn 8
+      return ("1-p-8");
+    } else if (x === 7 && y === 0) {         // Dark Side Royal Family
+      // Dark left Rook
+      return ("2-r-1");
+    } else if (x === 7 && y === 1) {
+      // Dark left Knight
+      return ("2-kn-1");
+    } else if (x === 7 && y === 2) {
+      // Dark left Bishop
+      return ("2-b-1");
+    } else if (x === 7 && y === 3) {
+      // Dark Queen
+      return ("2-q");
+    } else if (x === 7 && y === 4) {
+      // Dark King
+      return ("2-k");
+    } else if (x === 7 && y === 5) {
+      // Dark right Bishop
+      return ("2-b-2");
+    } else if (x === 7 && y === 6) {
+      // Dark right Knight
+      return ("2-kn-2");
+    } else if (x === 7 && y === 7) {
+      // Dark right Rook
+      return ("2-r-2");
+    } else if (x === 6 && y === 0) {        // Dark side Pawns
+      // Pawn 1
+      return ("2-p-1");
+    } else if (x === 6 && y === 1) {
+      // Pawn 2
+      return ("2-p-2");
+    } else if (x === 6 && y === 2) {
+      // Pawn 3
+      return ("2-p-3");
+    } else if (x === 6 && y === 3) {
+      // Pawn 4
+      return ("2-p-4");
+    } else if (x === 6 && y === 4) {
+      // Pawn 5
+      return ("2-p-5");
+    } else if (x === 6 && y === 5) {
+      // Pawn 6
+      return ("2-p-6");
+    } else if (x === 6 && y === 6) {
+      // Pawn 7
+      return ("2-p-7");
+    } else if (x === 6 && y === 7) {
+      // Pawn 8
+      return ("2-p-8");
+    }
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
