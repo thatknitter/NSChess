@@ -2,12 +2,74 @@ $(function(){
 });
 
 function Game(){
+  //@grid: array of Cell objects that contain game data : array
+  //@player: current player (true is white, false is black) : bool
+  //@sel: the currently selected cell, if any : Cell
+  //
   this.grid = [];
   for (i = 0; i < 8; i++) {
     this.grid[i] = [];
     for (j = 0; j < 8; j++) {
-      this.grid[i][j] = 0;
+      //if a piece should exist on start of game insert it
+      var piece = startingPiece(i,j);
+      this.grid[i][j] = new Cell(i,j,piece);
+      if((i+j)%2 === 0) grid[i][j].black = true;
     }
   }
+  this.cell = null;
+  this.player = true;
+
+  this.drawGrid = function(table){
+    //Clears the table and
+    //draws the grid on the table parameter element
+  };
+
+  this.calcMoves = function(x,y){
+    //calculates the possible moves for a selected piece,
+    //sets highlight to true on possible cells.
+  };
+
+  this.processMove = function(x,y){
+    //moves piece from selected cell (sel) to the 
+    //x,y coordinates of the arguments. Sets sel to 
+    //null and removes piece from the selected cell
+  };
+
+  this.isMated = function(){
+    //checks if the current player is in check or checkmate, if so
+    //alerts him and selects the king or ends the game.
+  };
+
+  function startingPiece(x,y){
+    //returns a Piece if a piece is on the board at
+    //the start of a game for a given x:y coordinate
+    return new Piece();
+  }
+
+  return this;
+}
+
+function Cell(x,y,piece){
+  //@piece: Piece object if one exists, otherwise null : Piece
+  //@x: x coordinate of cell : integer
+  //@y: y coordinate of cell : integer
+  //@black: true or false if cell is black : bool
+  //@highlight: true if cell is highlighted as possible move : bool
+  
+  this.x = x;
+  this.y = y;
+  this.piece = piece || null;
+  this.black = false;
+
+  return this;
+}
+
+function Piece(name){
+  //@name: name of the piece : string
+  //@moved: if the piece has ever been moved : boolean
+  //@player: the owner of the piece, true or false : boolean
+  this.name = name;
+  this.moved = false;
+
   return this;
 }
