@@ -256,6 +256,7 @@ function Game(){
     newCell.piece.moved = true;
     this.selected = null;
     clearHighlight(this.grid);
+    this.player = !this.player;
   };
 
   function clearHighlight(grid){
