@@ -197,14 +197,15 @@ function Game(){
     }
     
     function rbq(directions){
+      debugger;
       var direction,
           result = [];
       //loop for each direction given
       for (var i = 0; i < directions.length; i++) {
         // take the first direction and for each possible move loop
-        direction = directions[i];
+        direction = directions[i].slice();
         for (var move = 0; move < grid.length - y; move++) {
-          var curCell;
+          var curCell=null;
           if(grid[y+direction[0]]&&
             grid[y+direction[0]][x+direction[1]]){
             curCell= grid[y+direction[0]][x+direction[1]];
