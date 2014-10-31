@@ -2,6 +2,10 @@ $(function(){
 	var game = new Game();
 	var $table = $("table");
 	game.drawGrid($table);
+	$("td").click(function(){
+		alert("You clicked it!");
+	});
+	$(".piece").click(Game(calcMoves));
 });
 
 
