@@ -1,18 +1,18 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	game.drawGrid($table);
+	
+	$("table").ready(function(){
+		game.drawGrid($table);
 	$("td").click(function(){
-		alert("You clicked it!");
+		console.log("You clicked it!");
 	});
-	$(".piece").click(function(){
+	$("piece").click(function(){
 		game.possibleMoves($table);
 		console.log("this also works");
 	});
-	$("button").click(function(){
-		game.drawGrid($table);
-		console.log("hello, this works");
 	});
+
 });
 
 
@@ -41,9 +41,9 @@ function Game(){
   this.drawGrid = function(table){
 		table.empty();					// clears table 
 		for (i = 0; i < 8; i++) {
-			var $tr = $('<tr></tr>')
+			var $tr = $('<tr></tr>');
 				for (j = 0; j < 8; j++) {
-					var $td = $('<td></td>')
+					var $td = $('<td></td>');
 					if (this.grid[i][j].black){
 						$tr.addClass($td);
 					}
@@ -54,7 +54,7 @@ function Game(){
 			}
 			table.append($tr);
  		}
-	}
+	};
   
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
@@ -137,7 +137,7 @@ function Game(){
       }
     return result;
     }
-  }
+  };
 
 
   this.calcMoves = function(x,y){
