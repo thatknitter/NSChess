@@ -209,6 +209,8 @@ function Game(){
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
     //alerts him and selects the king or ends the game.
+    var grid = this.grid,
+        player = this.player;
   };
 
   function startingPiece(x,y){
