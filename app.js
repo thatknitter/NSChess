@@ -95,11 +95,7 @@ function Game(){
 					}
 				}
  			}
-
- 				}
       $td.attr('id', j+","+i)
- 				}
- 			$td.attr('id', j+","+i);
 			$tr.append($td);
 			}
 			table.append($tr);
@@ -231,7 +227,7 @@ function Game(){
     //sets highlight to true on possible cells.
     var grid = this.grid, 
         cell = grid[y][x],
-        possible = possibleMoves(x,y);
+        possible = this.possibleMoves(x,y);
     //set the selected piece to the one we are doing 
     //the highlighting for. 
     this.selected = cell;
@@ -250,13 +246,53 @@ function Game(){
     newCell.piece.moved = true;
     this.selected = null;
   };
+<<<<<<< HEAD
   
+=======
+>>>>>>> d75f84e7ebfe93bd685c91ff317503607813662c
 
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
     //alerts him and selects the king or ends the game.
     var grid = this.grid,
-        player = this.player;
+        player = this.player,
+        king = findKing(),
+        i,j,k,
+        checked = false;
+
+    for (i = 0; i < 8; i++) {
+      for (j = 0; j < 8; j++) {
+        var cell = grid[i][j];
+        //for every enemy piece
+        if(cell.piece && cell.piece.player !== player){
+          //calculate moves and see if king can be hit
+          var moves = this.possibleMoves(j,y);
+          for (k = 0; k < moves.length; k++) {
+            //if it can, set checked to true
+            if(moves[k].x === cell.x && moves[k].y === cell.y){
+              checked = true;
+            }
+          }
+        }
+      }
+    }
+
+    if(checked){
+      //do more stuff to see if the check is a checkmate
+    }
+
+    return checked;
+
+    function findKing(){
+      for (i = 0; i < grid.length; i++) {
+        for (j = 0; j < grid.length; j++) {
+          var cell = grid[i][j];
+          if(cell.piece && cell.piece.player === player &&
+            cell.piece.name.split('-')[1] === 'k')
+              return cell;
+        }
+      }
+    }
   };
 
   function startingPiece(x, y){
