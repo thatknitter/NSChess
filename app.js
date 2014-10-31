@@ -8,6 +8,7 @@ $(function(){
 		console.log("You clicked it!");
 	});
 	$("piece").click(function(){
+		game.Piece($table);
 		game.possibleMoves($table);
 		console.log("this also works");
 	});
