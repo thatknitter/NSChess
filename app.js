@@ -50,15 +50,12 @@ function Game(){
         return pawn(this);
       case 'r':
         return rbq([[0,1],[0,-1],[1,0],[-1,0]]);
-        break;
       case 'kn':
         break;
       case 'b':
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
-        break;
       case 'q':
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]);
-        break;
       case 'k':
         break;
     }
@@ -86,21 +83,42 @@ function Game(){
     }
     
     function rbq(directions){
+      debugger;
       var direction,
           result = [];
-      for (i = 0; i < directions.length; i++) {
+      //loop for each direction given
+      for (var i = 0; i < directions.length; i++) {
+        // take the first direction and for each possible move loop
         direction = directions[i];
-        while(grid[y+direction[0]]&&
-              highlight(grid[y+direction[0]][x+direction[1]])
-             ){
-
+        for (move = 0; move < grid.length - y; move++) {
+          var curCell;
+          if(grid[y+direction[0]]&&
+            grid[y+direction[0]][x+direction[1]]){
+            curCell= grid[y+direction[0]][x+direction[1]];
+          }
+          //if there is no cell to move to break;
+          if(!curCell){
+            break;
+          }
+          //if current cell has a friendly piece, break
+          //if current cell has an enemy piece, add to moves and break
+          else if(curCell.piece){
+            if(curCell.piece.player === player){break;}
+            else {
+              result.push(curCell);
+              break;
+            }
+          }
+          //if current cel is empty, add to possible moves and continue
+          result.push(curCell);
           direction[0] += directions[i][0];
           direction[1] += directions[i][1];
         }
+
       }
     }
+  }
 
-  };
 
   this.calcMoves = function(x,y){
     //calculates the possible moves for a selected piece,
@@ -248,7 +266,7 @@ function Game(){
       return ("2-p-8");
     }
   }
-}
+};
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
