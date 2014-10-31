@@ -5,7 +5,7 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-	$(".piece").click(Game(calcMoves));
+//	$(".piece").click(Game(calcMoves));
 });
 
 
@@ -32,11 +32,24 @@ function Game(){
   this.player = true;
 
   this.drawGrid = function(table){
-    //Clears the table and
-    //draws the grid on the table parameter element
-  };
-
-  this.possibleMoves = function(x,y){
+		table.empty();					// clears table 
+		for (i = 0; i < 8; i++) {
+			var $tr = $('<tr></tr>')
+				for (j = 0; j < 8; j++) {
+					var $td = $('<td></td>')
+					if (this.grid[i][j].black){
+						$tr.addClass($td);
+					}
+					if (this.grid[i][j].piece.name){
+						$td.text("1-p-1");
+					}
+					$tr.append($td);
+			}
+			table.append($tr);
+ 		}
+	}
+  
+	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
     var grid = this.grid, 
@@ -152,9 +165,19 @@ function Game(){
   }
 
   this.processMove = function(x,y){
+    
+    //var selectedCellx = game.selected; //?
+    //var selectedCelly = this; //?
+    
     //moves piece from selected cell (selected) to the 
-    //x,y coordinates of the arguments. Sets sel to 
-    //null and removes piece from the selected cell
+    //x,y coordinates of the arguments.
+    //game.grid[x][y] = game.grid[selectedCellx][selectedCelly];
+    
+    //Sets selected to null and removes piece from the selected cell
+    //game.grid[selectedCellx][selectedCelly] = null;
+    //game.grid[x][y] = null;
+   
+    
   };
 
   this.isMated = function(){
@@ -193,28 +216,28 @@ function Game(){
       // White right Rook
       return ("1-r-2");
     } else if (x === 1 && y === 0) {        // Light side Pawns
-      // Pawn 1
+      // White pawn 1
       return ("1-p-1");
     } else if (x === 1 && y === 1) {
-      // Pawn 2
+      // White pawn 2
       return ("1-p-2");
     } else if (x === 1 && y === 2) {
-      // Pawn 3
+      // White pawn 3
       return ("1-p-3");
     } else if (x === 1 && y === 3) {
-      // Pawn 4
+      // White pawn 4
       return ("1-p-4");
     } else if (x === 1 && y === 4) {
-      // Pawn 5
+      // White pawn 5
       return ("1-p-5");
     } else if (x === 1 && y === 5) {
-      // Pawn 6
+      // White pawn 6
       return ("1-p-6");
     } else if (x === 1 && y === 6) {
-      // Pawn 7
+      // White pawn 7
       return ("1-p-7");
     } else if (x === 1 && y === 7) {
-      // Pawn 8
+      // White pawn 8
       return ("1-p-8");
     } else if (x === 7 && y === 0) {         // Dark Side Royal Family
       // Dark left Rook
@@ -241,28 +264,28 @@ function Game(){
       // Dark right Rook
       return ("2-r-2");
     } else if (x === 6 && y === 0) {        // Dark side Pawns
-      // Pawn 1
+      // Dark pawn 1
       return ("2-p-1");
     } else if (x === 6 && y === 1) {
-      // Pawn 2
+      // Dark pawn 2
       return ("2-p-2");
     } else if (x === 6 && y === 2) {
-      // Pawn 3
+      // Dark pawn 3
       return ("2-p-3");
     } else if (x === 6 && y === 3) {
-      // Pawn 4
+      // Dark pawn 4
       return ("2-p-4");
     } else if (x === 6 && y === 4) {
-      // Pawn 5
+      // Dark pawn 5
       return ("2-p-5");
     } else if (x === 6 && y === 5) {
-      // Pawn 6
+      // Dark pawn 6
       return ("2-p-6");
     } else if (x === 6 && y === 6) {
-      // Pawn 7
+      // Dark pawn 7
       return ("2-p-7");
     } else if (x === 6 && y === 7) {
-      // Pawn 8
+      // Dark pawn 8
       return ("2-p-8");
     }
   }
