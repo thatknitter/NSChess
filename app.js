@@ -16,7 +16,7 @@ $(function(){
 	});
 
 });
-}	
+});	
 
 function Game(){
   //@grid: array of Cell objects that contain game data : array
@@ -312,6 +312,7 @@ function Game(){
         return undefined;
     }
   }
+}
 
 
 function Cell(x,y,piece){
