@@ -176,9 +176,11 @@ function Game(){
         }
         //Handle sideways attacking
         if (grid[y+direction][x+1] &&
+            grid[y+direction][x+1].piece &&
             grid[y+direction][x+1].piece.player!==player)
               result.push(grid[y+direction][x+1][y]);
         if (grid[y+direction][x-1] &&
+            grid[y+direction][x-1].piece &&
             grid[y+direction][x-1].piece.player!==player)
               result.push(grid[y+direction][x-1][y]);
       }
@@ -309,6 +311,7 @@ function Game(){
         return undefined;
     }
   }
+}
 
 
 function Cell(x,y,piece){
