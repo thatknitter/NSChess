@@ -5,7 +5,6 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-<<<<<<< HEAD
 	$(".piece").click(function(){
 		game.possibleMoves($table);
 		console.log("this also works");
@@ -14,9 +13,6 @@ $(function(){
 		game.drawGrid($table);
 		console.log("hello, this works");
 	});
-=======
-//	$(".piece").click(Game(calcMoves));
->>>>>>> FETCH_HEAD
 });
 
 
