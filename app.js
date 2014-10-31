@@ -28,9 +28,7 @@ function Game(){
     this.grid[i] = [];
     for (j = 0; j < 8; j++) {
       //if a piece should exist on start of game insert it
-      var name = startingPiece(i,j),
-          piece;
-      if(name)  piece = new Piece(name);
+      var piece = startingPiece(i,j);
       this.grid[i][j] = new Cell(j,i,piece);
       if((i+j)%2 === 0) this.grid[i][j].black = true;
     }
@@ -334,7 +332,8 @@ function Piece(name){
 	//2-r-1		rook, right*/
   this.name = name?name:undefined;
   this.moved = false;
-  this.player = (this.name && this.name.split('-')[0] === '1') ? true : false;
+  debugger;
+  this.player = (this.name!==undefined && this.name.split('-')[0] === '1') ? true : false;
 
   return this;
 }
