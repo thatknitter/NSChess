@@ -16,7 +16,7 @@ $(function(){
 	});
 
 });
-}	
+});	
 
 function Game(){
   //@grid: array of Cell objects that contain game data : array
