@@ -246,11 +246,6 @@ function Game(){
     newCell.piece.moved = true;
     this.selected = null;
   };
-<<<<<<< HEAD
-  
-=======
->>>>>>> d75f84e7ebfe93bd685c91ff317503607813662c
-
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
     //alerts him and selects the king or ends the game.
