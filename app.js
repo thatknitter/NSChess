@@ -26,10 +26,21 @@ function Game(){
   this.player = true;
 
   this.drawGrid = function(table){
-    //Clears the table and
-    //draws the grid on the table parameter element
-  };
-
+		table.empty();					// clears table 
+		for (i = 0; i < 8; i++) {
+			var $tr = $('<tr></tr>')
+				for (j = 0; j < 8; j++) {
+					var $td = $('<td></td>')
+					if (this.grid[i][j].black){
+						$tr.addClass($td);
+					}
+					if (this.grid[i][j].piece.name{	
+						$tr.text("1-p-1");
+					}
+			table.append($tr);
+			}
+ 		}
+ 	};	
   this.calcMoves = function(x,y){
     //calculates the possible moves for a selected piece,
     //sets highlight to true on possible cells.
