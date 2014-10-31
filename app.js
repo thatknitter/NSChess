@@ -102,7 +102,7 @@ function Game(){
 					}
 				}
  			}
-      $td.attr('id', j+","+i)
+      $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
 			table.append($tr);
