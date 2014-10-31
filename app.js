@@ -5,7 +5,6 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-<<<<<<< HEAD
 	$(".piece").click(function(){
 		game.possibleMoves($table);
 		console.log("this also works");
@@ -14,9 +13,7 @@ $(function(){
 		game.drawGrid($table);
 		console.log("hello, this works");
 	});
-=======
-//	$(".piece").click(Game(calcMoves));
->>>>>>> FETCH_HEAD
+
 });
 
 
@@ -45,9 +42,9 @@ function Game(){
   this.drawGrid = function(table){
 		table.empty();					// clears table 
 		for (i = 0; i < 8; i++) {
-			var $tr = $('<tr></tr>')
+			var $tr = $('<tr></tr>');
 				for (j = 0; j < 8; j++) {
-					var $td = $('<td></td>')
+					var $td = $('<td></td>');
 					if (this.grid[i][j].black){
 						$tr.addClass($td);
 					}
@@ -58,7 +55,7 @@ function Game(){
 			}
 			table.append($tr);
  		}
-	}
+	};
   
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
@@ -141,7 +138,7 @@ function Game(){
 
       }
     }
-  }
+  };
 
 
   this.calcMoves = function(x,y){
