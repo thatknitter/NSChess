@@ -71,15 +71,41 @@ function Game(){
       case 'r':
         return rbq([[0,1],[0,-1],[1,0],[-1,0]]);
       case 'kn':
-        break;
+        return knight();
       case 'b':
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
       case 'q':
-        return rbq([[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]);
+        return rbq([[1,1],[1,-1],[-1,1],[-1,-1],
+                   [0,1],[0,-1],[1,0],[-1,0]]);
       case 'k':
         break;
     }
 
+    function pushIfAvailable(result, x, y){
+      if(grid[y] && grid[y][x]){
+        var cell = grid[y][x];
+
+        if(cell.piece && cell.piece.player !== player)
+          result.push(cell);
+        else if(!cell.piece)
+          result.push(cell);
+        else 
+          return false;
+      }
+    }
+
+    function knight(){
+      var twos = [2,-2],
+          ones = [1,-1],
+          result = [];
+      for (var i = 0; i < twos.length; i++) {
+        for (var j = 0; j < ones.length; j++) {
+          pushIfAvailable(result,x+ones[j],y+twos[i]);
+          pushIfAvailable(result,x+twos[j],y+ones[i]);
+        }
+      }
+      return result;
+    }
 
     function pawn(ctx){
       //moving straight forward
@@ -103,7 +129,6 @@ function Game(){
     }
     
     function rbq(directions){
-      debugger;
       var direction,
           result = [];
       //loop for each direction given
