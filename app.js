@@ -1,17 +1,16 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	game.drawGrid($table);
+	
+	$("table").ready(function(){
+		game.drawGrid($table);
 	$("td").click(function(){
-		alert("You clicked it!");
+		console.log("You clicked it!");
 	});
-	$(".piece").click(function(){
+	$("piece").click(function(){
 		game.possibleMoves($table);
 		console.log("this also works");
 	});
-	$("button").click(function(){
-		game.drawGrid($table);
-		console.log("hello, this works");
 	});
 
 });
