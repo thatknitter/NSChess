@@ -13,7 +13,7 @@ $(function(){
 			console.log("Hey, this does something");
 			game.drawGrid($table);
 		}else if(cell.highlight){
-			game.processMoves(+coordinates[0], +coordinates[1]);
+			game.processMove(+coordinates[0], +coordinates[1]);
 			console.log("this does something different");
 			game.drawGrid($table);
 		}
