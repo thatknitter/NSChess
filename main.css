@@ -7,14 +7,14 @@ h1 {
 	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
 	font-size: 15pt;
 	color: #000000;
-	text-shadow: 2px 2px #FFFFFF;
+	/*text-shadow: 2px 2px #FFFFFF;*/
 }
 
 .white {
 	font-family: Copperplate, 'Copperplate Gothic Light', fantasy;
 	font-size: 15pt;
 	color: #66CCFF;
-	text-shadow: 2px 2px #000000;
+	/*text-shadow: 2px 2px #000000;*/
 }
 
 td.highlight {

@@ -5,17 +5,18 @@ $(function(){
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$("td").click(function(){
-		console.log("You clicked it!");
+		var coordinates = $(this).attr("id").split(","); 
+		var cell = game.grid[+coordinates[1]][+coordinates[0]];
+		//is this a piece the player owns? True = calc moves, elseif highlighted space process move
+		if(cell.piece && cell.piece.player === game.player){
+			game.calcMoves(+coordinates[0], +coordinates[1]);
+		}else if(cell.highlight){
+			game.processMoves(+coordinates[0], +coordinates[1]);
+		}
 	});
 
-	$("piece").click(function(){
-		game.Piece($table);
-
-		game.possibleMoves($table);
-		console.log("this also works");
-	});
 });
-});
+});	
 
 function Game(){
   //@grid: array of Cell objects that contain game data : array
@@ -94,7 +95,11 @@ function Game(){
 					}
 				}
  			}
-			$td.attr('id', j+","+i)
+
+ 				}
+      $td.attr('id', j+","+i)
+ 				}
+ 			$td.attr('id', j+","+i);
 			$tr.append($td);
 			}
 			table.append($tr);
@@ -243,7 +248,9 @@ function Game(){
     newCell.piece = oldCell.piece;
     oldCell.piece = undefined;
     newCell.piece.moved = true;
-  }
+    this.selected = null;
+  };
+  
 
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
