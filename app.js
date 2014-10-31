@@ -4,7 +4,7 @@ $(function(){
 	
 	$("table").ready(function(){
 		game.drawGrid($table);
-	$("td").click(function(){
+	$(document).on("click", "td", function(){
 		var coordinates = $(this).attr("id").split(","); 
 		var cell = game.grid[+coordinates[1]][+coordinates[0]];
 		//is this a piece the player owns? True = calc moves, elseif highlighted space process move
@@ -102,7 +102,7 @@ function Game(){
 					}
 				}
  			}
-      $td.attr('id', j+","+i)
+      $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
 			table.append($tr);
