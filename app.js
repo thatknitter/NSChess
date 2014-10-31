@@ -5,7 +5,7 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-	$(".piece").click(Game(calcMoves));
+//	$(".piece").click(Game(calcMoves));
 });
 
 
@@ -40,13 +40,14 @@ function Game(){
 					if (this.grid[i][j].black){
 						$tr.addClass($td);
 					}
-					if (this.grid[i][j].piece.name{	
-						$tr.text("1-p-1");
+					if (this.grid[i][j].piece.name){
+						$td.text("1-p-1");
 					}
-			table.append($tr);
+					$tr.append($td);
 			}
+			table.append($tr);
  		}
- 	};	
+	}
   
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
