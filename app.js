@@ -176,9 +176,11 @@ function Game(){
       //able to move twice if it is the first move
       var direction = player ? 1 : -1,
           result = [];
-      if (grid[y+direction]){
+      if (grid[y+direction] && grid[y+direction][x] && !grid[y+direction][x].piece){
         result.push(grid[y+direction][x]);
-        if(!piece.moved&&grid[y+direction*2]){ 
+        if(!piece.moved&&grid[y+direction*2] &&
+          grid[y+direction*2][x] &&
+          !grid[y+direction*2][x].piece){ 
           result.push(grid[y+direction*2][x]);
         }
         //Handle sideways attacking
