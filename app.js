@@ -239,6 +239,7 @@ function Game(){
         possible = this.possibleMoves(x,y);
     //set the selected piece to the one we are doing 
     //the highlighting for. 
+    clearHighlight(grid);
     this.selected = cell;
     for (i = 0; i < possible.length; i++) {
       possible[i].highlight = true;
@@ -254,7 +255,17 @@ function Game(){
     oldCell.piece = undefined;
     newCell.piece.moved = true;
     this.selected = null;
+    clearHighlight(this.grid);
   };
+
+  function clearHighlight(grid){
+    for (i = 0; i < 8; i++) {
+      for (j = 0; j < 8; j++) {
+        grid[i][j].highlight = false;
+      }
+    }
+  }
+
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
     //alerts him and selects the king or ends the game.
