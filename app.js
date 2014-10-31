@@ -33,7 +33,7 @@ function Game(){
     this.grid[i] = [];
     for (j = 0; j < 8; j++) {
       //if a piece should exist on start of game insert it
-      var piece = startingPiece(i,j);
+      var piece = startingPiece(j,i);
       this.grid[i][j] = new Cell(j,i,piece);
       if((i+j)%2 === 0) this.grid[i][j].black = true;
     }
