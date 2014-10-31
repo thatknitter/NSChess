@@ -281,6 +281,8 @@ function Game(){
     } else {
         return undefined;
     }
+  }
+}
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
