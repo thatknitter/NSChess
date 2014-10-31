@@ -93,9 +93,9 @@ function Game(){
 									break;
 					}
 			}
+ 				}
 			$td.attr('id', j+","+i)
 			$tr.append($td);
- 				}
 			}
 			table.append($tr);
  		}
@@ -249,7 +249,44 @@ function Game(){
     //checks if the current player is in check or checkmate, if so
     //alerts him and selects the king or ends the game.
     var grid = this.grid,
-        player = this.player;
+        player = this.player,
+        king = findKing(),
+        i,j,k,
+        checked = false;
+
+    for (i = 0; i < 8; i++) {
+      for (j = 0; j < 8; j++) {
+        var cell = grid[i][j];
+        //for every enemy piece
+        if(cell.piece && cell.piece.player !== player){
+          //calculate moves and see if king can be hit
+          var moves = this.possibleMoves(j,y);
+          for (k = 0; k < moves.length; k++) {
+            //if it can, set checked to true
+            if(moves[k].x === cell.x && moves[k].y === cell.y){
+              checked = true;
+            }
+          }
+        }
+      }
+    }
+
+    if(checked){
+      //do more stuff to see if the check is a checkmate
+    }
+
+    return checked;
+
+    function findKing(){
+      for (i = 0; i < grid.length; i++) {
+        for (j = 0; j < grid.length; j++) {
+          var cell = grid[i][j];
+          if(cell.piece && cell.piece.player === player &&
+            cell.piece.name.split('-')[1] === 'k')
+              return cell;
+        }
+      }
+    }
   };
 
   function startingPiece(x, y){
@@ -265,7 +302,7 @@ function Game(){
                   ["2-p-1", "2-p-2", "2-p-3", "2-p-4", "2-p-5", "2-p-6", "2-p-7", "2-p-8"], 
                   ["2-r-1", "2-kn-1", "2-b-1", "2-q", "2-k", "2-b-2", "2-kn-2", "2-r-2"]];
 
-    if (matrix[y][x] === "") {
+    if (matrix[y][x] !== "") {
       return new Piece(matrix[y][x]);
     } else {
         return undefined;
@@ -332,7 +369,6 @@ function Piece(name){
 	//2-r-1		rook, right*/
   this.name = name?name:undefined;
   this.moved = false;
-  debugger;
   this.player = (this.name!==undefined && this.name.split('-')[0] === '1') ? true : false;
 
   return this;
