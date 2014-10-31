@@ -1,18 +1,19 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	game.drawGrid($table);
+	
+	$("table").ready(function(){
+		game.drawGrid($table);
 	$("td").click(function(){
-		alert("You clicked it!");
+		console.log("You clicked it!");
 	});
-	$(".piece").click(function(){
+	$("piece").click(function(){
+		game.Piece($table);
 		game.possibleMoves($table);
 		console.log("this also works");
 	});
-	$("button").click(function(){
-		game.drawGrid($table);
-		console.log("hello, this works");
 	});
+
 });
 
 
@@ -41,9 +42,9 @@ function Game(){
   this.drawGrid = function(table){
 		table.empty();					// clears table 
 		for (i = 0; i < 8; i++) {
-			var $tr = $('<tr></tr>')
+			var $tr = $('<tr></tr>');
 				for (j = 0; j < 8; j++) {
-					var $td = $('<td></td>')
+					var $td = $('<td></td>');
 					if (this.grid[i][j].black){
 						$td.addClass("black");
 					}
@@ -99,9 +100,9 @@ function Game(){
  				}
 			}
 			table.append($tr);
-		}
-	}
-	
+ 		}
+	};
+  
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
@@ -117,15 +118,52 @@ function Game(){
       case 'r':
         return rbq([[0,1],[0,-1],[1,0],[-1,0]]);
       case 'kn':
-        break;
+        return knight();
       case 'b':
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
       case 'q':
-        return rbq([[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]);
+        return rbq([[1,1],[1,-1],[-1,1],[-1,-1],
+                   [0,1],[0,-1],[1,0],[-1,0]]);
       case 'k':
-        break;
+        return king();
     }
 
+    function king(){
+      var result = [];
+      for (i = -1; i < 2; i++) {
+        for (j = -1; j < 2; j++) {
+          if(!(i===0 && j===0))
+            pushIfAvailable(result, x+j, y+i);
+        }
+      }
+      return result;
+    }
+
+    function pushIfAvailable(result, x, y){
+      if(grid[y] && grid[y][x]){
+        var cell = grid[y][x];
+
+        if(cell.piece && cell.piece.player !== player)
+          result.push(cell);
+        else if(!cell.piece)
+          result.push(cell);
+        else 
+          return false;
+      }
+    }
+
+    function knight(){
+      var twos = [2,-2],
+          ones = [1,-1],
+          result = [];
+      for (var i = 0; i < twos.length; i++) {
+        for (var j = 0; j < ones.length; j++) {
+          pushIfAvailable(result,x+ones[j],y+twos[i]);
+          pushIfAvailable(result,x+twos[j],y+ones[i]);
+        }
+      }
+      return result;
+    }
 
     function pawn(ctx){
       //moving straight forward
@@ -149,14 +187,13 @@ function Game(){
     }
     
     function rbq(directions){
-      debugger;
       var direction,
           result = [];
       //loop for each direction given
       for (var i = 0; i < directions.length; i++) {
         // take the first direction and for each possible move loop
         direction = directions[i];
-        for (move = 0; move < grid.length - y; move++) {
+        for (var move = 0; move < grid.length - y; move++) {
           var curCell;
           if(grid[y+direction[0]]&&
             grid[y+direction[0]][x+direction[1]]){
@@ -180,42 +217,25 @@ function Game(){
           direction[0] += directions[i][0];
           direction[1] += directions[i][1];
         }
-
       }
+    return result;
     }
-  }
+  };
 
 
   this.calcMoves = function(x,y){
     //calculates the possible moves for a selected piece,
     //sets highlight to true on possible cells.
     var grid = this.grid, 
-        cell = grid[y][x];
+        cell = grid[y][x],
+        possible = possibleMoves(x,y);
     //set the selected piece to the one we are doing 
     //the highlighting for. 
     this.selected = cell;
+    for (i = 0; i < possible.length; i++) {
+      possible[i].highlight = true;
+    }
   };
-
-  //highlight checks if a piece can move to a cell, if so
-  //it highlights it. returns false if it hits a piece or 
-  //the space oes not exist.
-  function highlight(cell, diagonalPawn){
-    if (!diagonalPawn){
-      if (!cell.piece){
-        cell.highlight = true;
-        return true;
-      }
-      else if(cell.piece.player!=player){
-        cell.highlight = true;
-        return false;
-      }
-    }
-    else if(diagonalPawn&&cell.piece&&cell.piece.player != player){
-        cell.highlight = true;
-        return true;
-    }
-    else return false;
-  }
 
   this.processMove = function(x,y){
     
@@ -342,7 +362,7 @@ function Game(){
       return ("2-p-8");
     }
   }
-};
+}
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
