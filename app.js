@@ -99,7 +99,7 @@ function Game(){
 			$tr.append($td);
 			}
 			table.append($tr);
- 		}
+ 	};
 	};
   
 	this.possibleMoves = function(x,y){
@@ -314,7 +314,7 @@ function Game(){
         return undefined;
     }
   }
-}
+
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
