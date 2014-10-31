@@ -5,7 +5,7 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-	$(".piece").click(Game(calcMoves));
+//	$(".piece").click(Game(calcMoves));
 });
 
 
@@ -32,22 +32,35 @@ function Game(){
   this.player = true;
 
   this.drawGrid = function(table){
-    //Clears the table and
-    //draws the grid on the table parameter element
-  };
-
-  this.possibleMoves = function(x,y){
+		table.empty();					// clears table 
+		for (i = 0; i < 8; i++) {
+			var $tr = $('<tr></tr>')
+				for (j = 0; j < 8; j++) {
+					var $td = $('<td></td>')
+					if (this.grid[i][j].black){
+						$tr.addClass($td);
+					}
+					if (this.grid[i][j].piece.name){
+						$td.text("1-p-1");
+					}
+					$tr.append($td);
+			}
+			table.append($tr);
+ 		}
+	}
+  
+	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
     var grid = this.grid, 
         cell = grid[y][x],
         player = this.player,
         piece = cell.piece;
-    if (!piece.name) return;
+    if (!piece) {return;}
 
     switch(piece.name.split('-')[1]){
       case 'p':
-        return pawn();
+        return pawn(this);
       case 'r':
         return rbq([[0,1],[0,-1],[1,0],[-1,0]]);
         break;
@@ -63,7 +76,8 @@ function Game(){
         break;
     }
 
-    function pawn(){
+
+    function pawn(ctx){
       //moving straight forward
       //able to move twice if it is the first move
       var direction = player ? 1 : -1,
@@ -74,15 +88,12 @@ function Game(){
           result.push(grid[y+direction*2][x]);
         }
         //Handle sideways attacking
-        var nextRow = grid[y+direction];
-        if (nextRow[x+1] &&
-            nextRow[x+1].piece &&
-            nextRow[x+1].piece.player!=this.player)
-              result.push(nextRow[x+1]);
-        if (nextRow[x-1] &&
-            nextRow[x-1].piece &&
-            nextRow[x-1].piece.player!=this.player)
-              result.push(nextRow[x-1]);
+        if (grid[y+direction][x+1] &&
+            grid[y+direction][x+1].piece.player!==player)
+              result.push(grid[y+direction][x+1][y]);
+        if (grid[y+direction][x-1] &&
+            grid[y+direction][x-1].piece.player!==player)
+              result.push(grid[y+direction][x-1][y]);
       }
       return result;
     }
@@ -321,7 +332,7 @@ function Piece(name){
 	//2-r-1		rook, right*/
   this.name = name?name:undefined;
   this.moved = false;
-  this.player = (this.name && this.name.split('-')[0] === 1) ? true : false;
+  this.player = (this.name && this.name.split('-')[0] === '1') ? true : false;
 
   return this;
 }
