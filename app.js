@@ -78,7 +78,18 @@ function Game(){
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1],
                    [0,1],[0,-1],[1,0],[-1,0]]);
       case 'k':
-        break;
+        return king();
+    }
+
+    function king(){
+      var result = [];
+      for (i = -1; i < 2; i++) {
+        for (j = -1; j < 2; j++) {
+          if(!(i===0 && j===0))
+            pushIfAvailable(result, x+j, y+i);
+        }
+      }
+      return result;
     }
 
     function pushIfAvailable(result, x, y){
@@ -169,32 +180,15 @@ function Game(){
     //calculates the possible moves for a selected piece,
     //sets highlight to true on possible cells.
     var grid = this.grid, 
-        cell = grid[y][x];
+        cell = grid[y][x],
+        possible = possibleMoves(x,y);
     //set the selected piece to the one we are doing 
     //the highlighting for. 
     this.selected = cell;
+    for (i = 0; i < possible.length; i++) {
+      possible[i].highlight = true;
+    }
   };
-
-  //highlight checks if a piece can move to a cell, if so
-  //it highlights it. returns false if it hits a piece or 
-  //the space oes not exist.
-  function highlight(cell, diagonalPawn){
-    if (!diagonalPawn){
-      if (!cell.piece){
-        cell.highlight = true;
-        return true;
-      }
-      else if(cell.piece.player!=player){
-        cell.highlight = true;
-        return false;
-      }
-    }
-    else if(diagonalPawn&&cell.piece&&cell.piece.player != player){
-        cell.highlight = true;
-        return true;
-    }
-    else return false;
-  }
 
   this.processMove = function(x,y){
     
@@ -321,7 +315,7 @@ function Game(){
       return ("2-p-8");
     }
   }
-};
+}
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
