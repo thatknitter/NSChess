@@ -238,25 +238,14 @@ function Game(){
   };
 
   this.processMove = function(x,y){
-    
-    //var selectedCellx = this.selected; //?
-    //var selectedCelly = this; //?
-    
     //moves piece from selected cell (selected) to the 
     //x,y coordinates of the arguments.
-    //this.grid[y][x] = game.grid[selectedCellx][selectedCelly];
-    // var newCell = this.grid[y][x]; 
-    // oldCell = this.selected;
-    // newCell.piece = oldCell.piece;
-    // oldCell.piece = undefined;
-    // newCell.piece.moved = true;
-    
-    //Sets selected to null and removes piece from the selected cell
-    //game.grid[selectedCellx][selectedCelly] = null;
-    //game.grid[x][y] = null;
-   
-    
-  };
+    var newCell = this.grid[y][x]; 
+    var oldCell = this.selected;
+    newCell.piece = oldCell.piece;
+    oldCell.piece = undefined;
+    newCell.piece.moved = true;
+  }
 
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
