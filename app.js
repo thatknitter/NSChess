@@ -93,9 +93,10 @@ function Game(){
 									break;
 					}
 			}
-			$td.attr('id', j+","+i)
-			$tr.append($td);
+
  				}
+      $td.attr('id', j+","+i)
+			$tr.append($td);
 			}
 			table.append($tr);
  		}
@@ -243,6 +244,7 @@ function Game(){
     newCell.piece = oldCell.piece;
     oldCell.piece = undefined;
     newCell.piece.moved = true;
+    this.selected = null;
   }
 
   this.isMated = function(){
@@ -265,7 +267,7 @@ function Game(){
                   ["2-p-1", "2-p-2", "2-p-3", "2-p-4", "2-p-5", "2-p-6", "2-p-7", "2-p-8"], 
                   ["2-r-1", "2-kn-1", "2-b-1", "2-q", "2-k", "2-b-2", "2-kn-2", "2-r-2"]];
 
-    if (matrix[y][x] === "") {
+    if (matrix[y][x] !== "") {
       return new Piece(matrix[y][x]);
     } else {
         return undefined;
@@ -332,7 +334,6 @@ function Piece(name){
 	//2-r-1		rook, right*/
   this.name = name?name:undefined;
   this.moved = false;
-  debugger;
   this.player = (this.name!==undefined && this.name.split('-')[0] === '1') ? true : false;
 
   return this;
