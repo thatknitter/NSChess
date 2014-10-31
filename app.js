@@ -10,8 +10,12 @@ $(function(){
 		//is this a piece the player owns? True = calc moves, elseif highlighted space process move
 		if(cell.piece && cell.piece.player === game.player){
 			game.calcMoves(+coordinates[0], +coordinates[1]);
+			console.log("Hey, this does something");
+			game.drawGrid($table);
 		}else if(cell.highlight){
 			game.processMoves(+coordinates[0], +coordinates[1]);
+			console.log("this does something different");
+			game.drawGrid($table);
 		}
 	});
 
