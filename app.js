@@ -47,6 +47,9 @@ function Game(){
 					if (this.grid[i][j].black){
 						$td.addClass("black");
 					}
+					if (this.grid[i][j].highlight){
+						$td.addClass("highlight");
+					}
 					if (this.grid[i][j].piece){
 						$td.text(this.grid[i][j].piece.name);
 						var name = this.grid[i][j].piece.name;
