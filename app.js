@@ -5,7 +5,6 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-<<<<<<< HEAD
 	$(".piece").click(function(){
 		game.possibleMoves($table);
 		console.log("this also works");
@@ -14,9 +13,6 @@ $(function(){
 		game.drawGrid($table);
 		console.log("hello, this works");
 	});
-=======
-//	$(".piece").click(Game(calcMoves));
->>>>>>> FETCH_HEAD
 });
 
 
@@ -49,17 +45,63 @@ function Game(){
 				for (j = 0; j < 8; j++) {
 					var $td = $('<td></td>')
 					if (this.grid[i][j].black){
-						$tr.addClass($td);
+						$td.addClass("black");
 					}
 					if (this.grid[i][j].piece.name){
-						$td.text("1-p-1");
+						$td.text(this.grid[i][j].piece.name);
+						var name = this.grid[i][j].piece.name;
+						var nameArray = name.split('-');
+					if (nameArray[0] === '1'){
+						switch(nameArray[1]){
+								case 'p':
+									$td.html('&#9817;');
+									break;
+								case 'r':
+									$td.html('&#9814;');
+									break;
+								case 'kn':
+									$td.html('&#9816;');
+									break;
+								case 'b':
+									$td.html('&#9815;');
+									break;
+								case 'q':
+									$td.html('&#9813;');
+									break;
+								case 'k':
+									$td.html('&#9812;');
+									break;
+						} 
+					} else {
+							switch(nameArray[1]){
+								case 'p':
+									$td.html('&#9823;');
+									break;
+								case 'r':
+									$td.html('&#9820;');
+									break;
+								case 'kn':
+									$td.html('&#9822;');
+									break;
+								case 'b':
+									$td.html('&#9821;');
+									break;
+								case 'q':
+									$td.html('&#9819;');
+									break;
+								case 'k':
+									$td.html('&#9818;');
+									break;
 					}
-					$tr.append($td);
+			}
+			$td.attr('id', j+","+i)
+			$tr.append($td);
+ 				}
 			}
 			table.append($tr);
- 		}
+		}
 	}
-  
+	
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
