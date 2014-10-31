@@ -5,7 +5,14 @@ $(function(){
 	$("td").click(function(){
 		alert("You clicked it!");
 	});
-	$(".piece").click(Game(calcMoves));
+	$(".piece").click(function(){
+		game.possibleMoves($table);
+		console.log("this also works");
+	});
+	$("button").click(function(){
+		game.drawGrid($table);
+		console.log("hello, this works");
+	});
 });
 
 
