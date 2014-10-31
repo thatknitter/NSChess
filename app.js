@@ -5,17 +5,18 @@ $(function(){
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$("td").click(function(){
-		console.log("You clicked it!");
+		var coordinates = $(this).attr("id").split(","); 
+		var cell = game.grid[+coordinates[1]][+coordinates[0]];
+		//is this a piece the player owns? True = calc moves, elseif highlighted space process move
+		if(cell.piece && cell.piece.player === game.player){
+			game.calcMoves(+coordinates[0], +coordinates[1]);
+		}else if(cell.highlight){
+			game.processMoves(+coordinates[0], +coordinates[1]);
+		}
 	});
 
-	$("piece").click(function(){
-		game.Piece($table);
-
-		game.possibleMoves($table);
-		console.log("this also works");
-	});
 });
-});
+});	
 
 function Game(){
   //@grid: array of Cell objects that contain game data : array
@@ -93,9 +94,9 @@ function Game(){
 									break;
 					}
 			}
-			$td.attr('id', j+","+i)
-			$tr.append($td);
  				}
+ 			$td.attr('id', j+","+i);
+			$tr.append($td);
 			}
 			table.append($tr);
  		}
@@ -243,7 +244,7 @@ function Game(){
     newCell.piece = oldCell.piece;
     oldCell.piece = undefined;
     newCell.piece.moved = true;
-  }
+  };
 
   this.isMated = function(){
     //checks if the current player is in check or checkmate, if so
@@ -265,7 +266,7 @@ function Game(){
                   ["2-p-1", "2-p-2", "2-p-3", "2-p-4", "2-p-5", "2-p-6", "2-p-7", "2-p-8"], 
                   ["2-r-1", "2-kn-1", "2-b-1", "2-q", "2-k", "2-b-2", "2-kn-2", "2-r-2"]];
 
-    if (matrix[y][x] === "") {
+    if (matrix[y][x] !== "") {
       return new Piece(matrix[y][x]);
     } else {
         return undefined;
@@ -332,7 +333,6 @@ function Piece(name){
 	//2-r-1		rook, right*/
   this.name = name?name:undefined;
   this.moved = false;
-  debugger;
   this.player = (this.name!==undefined && this.name.split('-')[0] === '1') ? true : false;
 
   return this;
