@@ -110,7 +110,7 @@ function Game(){
       for (var i = 0; i < directions.length; i++) {
         // take the first direction and for each possible move loop
         direction = directions[i];
-        for (move = 0; move < grid.length - y; move++) {
+        for (var move = 0; move < grid.length - y; move++) {
           var curCell;
           if(grid[y+direction[0]]&&
             grid[y+direction[0]][x+direction[1]]){
@@ -134,8 +134,8 @@ function Game(){
           direction[0] += directions[i][0];
           direction[1] += directions[i][1];
         }
-
       }
+    return result;
     }
   }
 
