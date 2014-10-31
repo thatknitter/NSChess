@@ -74,15 +74,12 @@ function Game(){
         return pawn(this);
       case 'r':
         return rbq([[0,1],[0,-1],[1,0],[-1,0]]);
-        break;
       case 'kn':
         break;
       case 'b':
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
-        break;
       case 'q':
         return rbq([[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]);
-        break;
       case 'k':
         break;
     }
@@ -110,21 +107,42 @@ function Game(){
     }
     
     function rbq(directions){
+      debugger;
       var direction,
           result = [];
-      for (i = 0; i < directions.length; i++) {
+      //loop for each direction given
+      for (var i = 0; i < directions.length; i++) {
+        // take the first direction and for each possible move loop
         direction = directions[i];
-        while(grid[y+direction[0]]&&
-              highlight(grid[y+direction[0]][x+direction[1]])
-             ){
-
+        for (move = 0; move < grid.length - y; move++) {
+          var curCell;
+          if(grid[y+direction[0]]&&
+            grid[y+direction[0]][x+direction[1]]){
+            curCell= grid[y+direction[0]][x+direction[1]];
+          }
+          //if there is no cell to move to break;
+          if(!curCell){
+            break;
+          }
+          //if current cell has a friendly piece, break
+          //if current cell has an enemy piece, add to moves and break
+          else if(curCell.piece){
+            if(curCell.piece.player === player){break;}
+            else {
+              result.push(curCell);
+              break;
+            }
+          }
+          //if current cel is empty, add to possible moves and continue
+          result.push(curCell);
           direction[0] += directions[i][0];
           direction[1] += directions[i][1];
         }
+
       }
     }
+  }
 
-  };
 
   this.calcMoves = function(x,y){
     //calculates the possible moves for a selected piece,
@@ -158,9 +176,19 @@ function Game(){
   }
 
   this.processMove = function(x,y){
+    
+    //var selectedCellx = game.selected; //?
+    //var selectedCelly = this; //?
+    
     //moves piece from selected cell (selected) to the 
-    //x,y coordinates of the arguments. Sets sel to 
-    //null and removes piece from the selected cell
+    //x,y coordinates of the arguments.
+    //game.grid[x][y] = game.grid[selectedCellx][selectedCelly];
+    
+    //Sets selected to null and removes piece from the selected cell
+    //game.grid[selectedCellx][selectedCelly] = null;
+    //game.grid[x][y] = null;
+   
+    
   };
 
   this.isMated = function(){
@@ -199,28 +227,28 @@ function Game(){
       // White right Rook
       return ("1-r-2");
     } else if (x === 1 && y === 0) {        // Light side Pawns
-      // Pawn 1
+      // White pawn 1
       return ("1-p-1");
     } else if (x === 1 && y === 1) {
-      // Pawn 2
+      // White pawn 2
       return ("1-p-2");
     } else if (x === 1 && y === 2) {
-      // Pawn 3
+      // White pawn 3
       return ("1-p-3");
     } else if (x === 1 && y === 3) {
-      // Pawn 4
+      // White pawn 4
       return ("1-p-4");
     } else if (x === 1 && y === 4) {
-      // Pawn 5
+      // White pawn 5
       return ("1-p-5");
     } else if (x === 1 && y === 5) {
-      // Pawn 6
+      // White pawn 6
       return ("1-p-6");
     } else if (x === 1 && y === 6) {
-      // Pawn 7
+      // White pawn 7
       return ("1-p-7");
     } else if (x === 1 && y === 7) {
-      // Pawn 8
+      // White pawn 8
       return ("1-p-8");
     } else if (x === 7 && y === 0) {         // Dark Side Royal Family
       // Dark left Rook
@@ -247,32 +275,32 @@ function Game(){
       // Dark right Rook
       return ("2-r-2");
     } else if (x === 6 && y === 0) {        // Dark side Pawns
-      // Pawn 1
+      // Dark pawn 1
       return ("2-p-1");
     } else if (x === 6 && y === 1) {
-      // Pawn 2
+      // Dark pawn 2
       return ("2-p-2");
     } else if (x === 6 && y === 2) {
-      // Pawn 3
+      // Dark pawn 3
       return ("2-p-3");
     } else if (x === 6 && y === 3) {
-      // Pawn 4
+      // Dark pawn 4
       return ("2-p-4");
     } else if (x === 6 && y === 4) {
-      // Pawn 5
+      // Dark pawn 5
       return ("2-p-5");
     } else if (x === 6 && y === 5) {
-      // Pawn 6
+      // Dark pawn 6
       return ("2-p-6");
     } else if (x === 6 && y === 6) {
-      // Pawn 7
+      // Dark pawn 7
       return ("2-p-7");
     } else if (x === 6 && y === 7) {
-      // Pawn 8
+      // Dark pawn 8
       return ("2-p-8");
     }
   }
-}
+};
 
 function Cell(x,y,piece){
   //@piece: Piece object if one exists, otherwise null : Piece
