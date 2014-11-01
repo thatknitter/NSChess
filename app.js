@@ -14,7 +14,8 @@ $(function(){
 			game.drawGrid($table);
 		}else if(cell.highlight){
 			game.processMove(+coordinates[0], +coordinates[1]);
-			console.log("this does something different");
+      console.log("this does something different");
+      game.isMated();
 			game.drawGrid($table);
 		}
 	});
@@ -109,12 +110,12 @@ function Game(){
  	};
 	};
   
-	this.possibleMoves = function(x,y){
+	this.possibleMoves = function(x,y,player){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
     var grid = this.grid, 
         cell = grid[y][x],
-        player = this.player,
+        player = player || this.player,
         piece = cell.piece;
     if (!piece) {return;}
 
@@ -197,7 +198,6 @@ function Game(){
     }
     
     function rbq(directions){
-      debugger;
       var direction,
           result = [];
       //loop for each direction given
@@ -285,10 +285,10 @@ function Game(){
         //for every enemy piece
         if(cell.piece && cell.piece.player !== player){
           //calculate moves and see if king can be hit
-          var moves = this.possibleMoves(j,y);
+          var moves = this.possibleMoves(j,i,!this.player);
           for (k = 0; k < moves.length; k++) {
             //if it can, set checked to true
-            if(moves[k].x === cell.x && moves[k].y === cell.y){
+            if(moves[k].x === king.x && moves[k].y === king.y){
               checked = true;
             }
           }
@@ -298,6 +298,8 @@ function Game(){
 
     if(checked){
       //do more stuff to see if the check is a checkmate
+      this.calcMoves(king.x, king.y);
+      console.log('check');
     }
 
     return checked;
