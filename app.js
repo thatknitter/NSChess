@@ -8,7 +8,10 @@ $(function(){
 		var coordinates = $(this).attr("id").split(","); 
 		var cell = game.grid[+coordinates[1]][+coordinates[0]];
 		//is this a piece the player owns? True = calc moves, elseif highlighted space process move
-		if(cell.piece && cell.piece.player === game.player){
+    if(game.mated){
+      $('h1').text('Player ' + game.mated + " wins!");
+    }
+		else if(cell.piece && cell.piece.player === game.player){
 			game.calcMoves(+coordinates[0], +coordinates[1]);
 			console.log("Hey, this does something");
 			game.drawGrid($table);
@@ -17,6 +20,9 @@ $(function(){
       console.log("this does something different");
       game.isMated();
 			game.drawGrid($table);
+      if(game.mated){
+        $('h1').text('Player ' + game.mated + " wins!");
+      }
 		}
 	});
 
@@ -26,7 +32,8 @@ $(function(){
 function Game(){
   //@grid: array of Cell objects that contain game data : array
   //@player: current player (true is white, false is black) : bool
-
+  //@mated: if the mage is at checkmate, this will equal the winning
+  //  player, 1 or 2
   //@selected: the currently selected cell, if any : Cell
 
   this.grid = [];
@@ -42,6 +49,7 @@ function Game(){
 
   this.selected = null;
   this.player = true;
+  this.mated = false;
 
   this.drawGrid = function(table){
 		table.empty();					// clears table 
@@ -204,7 +212,7 @@ function Game(){
       for (var i = 0; i < directions.length; i++) {
         // take the first direction and for each possible move loop
         direction = directions[i].slice();
-        for (var move = 0; move < grid.length - y; move++) {
+        for (var move = 0; move < 8; move++) {
           var curCell=null;
           if(grid[y+direction[0]]&&
             grid[y+direction[0]][x+direction[1]]){
@@ -277,36 +285,79 @@ function Game(){
         player = this.player,
         king = findKing(),
         i,j,k,
-        checked = false;
+        checkmate = false;
 
-    for (i = 0; i < 8; i++) {
-      for (j = 0; j < 8; j++) {
-        var cell = grid[i][j];
-        //for every enemy piece
-        if(cell.piece && cell.piece.player !== player){
-          //calculate moves and see if king can be hit
-          var moves = this.possibleMoves(j,i,!this.player);
-          for (k = 0; k < moves.length; k++) {
-            //if it can, set checked to true
-            if(moves[k].x === king.x && moves[k].y === king.y){
-              checked = true;
+
+    if(!isKingSafe(this)){
+      //do more stuff to see if the check is a checkmate
+      this.calcMoves(king.x, king.y);
+      console.log('check');
+      checkmate = true;
+
+      //get all the players pieces
+      var playersPieces = [];
+      for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+          var cell = grid[i][j];
+          if(cell.piece && cell.piece.player === player ){
+            playersPieces.push(cell);
+          }
+        }
+      }
+      for (i = 0; i < playersPieces.length; i++) {
+      //  loop through the pieces
+        var checkMoves = this.possibleMoves(playersPieces[i].x,
+                                            playersPieces[i].y),
+            swap;
+        for (j = 0; j < checkMoves.length; j++) {
+          // loop through all the moves that a piece can make
+          //apply the move, holding the old piece in swap
+          swap = checkMoves[j].piece;
+          checkMoves[j].piece = playersPieces[i].piece;
+          playersPieces[i].piece = null;
+          //see if the king is still in check, if so set checkmate to
+          //true
+          if(isKingSafe(this)){
+            checkmate = false;
+          }
+          //reset the pieces back to how they were.
+          playersPieces[i].piece = checkMoves[j].piece;
+          checkMoves[j].piece = swap;
+        }
+      }
+      if(checkmate){
+        console.log('checkmate');
+        this.mated = !player? 1 : 2;
+      }
+    }
+
+    return checkmate;
+
+    
+    function isKingSafe(game){
+      king = findKing();
+      for (var k = 0; k < 8; k++) {
+        for (var l = 0; l < 8; l++) {
+          var cell = grid[k][l];
+          //for every enemy piece
+          if(cell.piece && cell.piece.player !== player){
+            //calculate moves and see if king can be hit
+            var moves = game.possibleMoves(l,k,!player);
+            for (var m = 0; m < moves.length; m++) {
+              //if it can, set checked to true
+              if(moves[m].x === king.x && moves[m].y === king.y){
+                return false;
+              }
             }
           }
         }
       }
+      return true;
     }
-
-    if(checked){
-      //do more stuff to see if the check is a checkmate
-      this.calcMoves(king.x, king.y);
-      console.log('check');
-    }
-
-    return checked;
 
     function findKing(){
-      for (i = 0; i < grid.length; i++) {
-        for (j = 0; j < grid.length; j++) {
+      for (var i = 0; i < grid.length; i++) {
+        for (var j = 0; j < grid.length; j++) {
           var cell = grid[i][j];
           if(cell.piece && cell.piece.player === player &&
             cell.piece.name.split('-')[1] === 'k')
@@ -314,6 +365,7 @@ function Game(){
         }
       }
     }
+
   };
 
   function startingPiece(x, y){
