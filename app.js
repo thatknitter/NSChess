@@ -1,7 +1,6 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	var $option = $("sets");
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$(document).on("click", "td", function(){
@@ -57,6 +56,8 @@ function Game(){
 			var $tr = $('<tr></tr>');
 				for (j = 0; j < 8; j++) {
 					var $td = $('<td></td>');
+					var $option = $("#sets");
+					
 					if (this.grid[i][j].black){
 						$td.addClass("black");
 					}
@@ -64,10 +65,15 @@ function Game(){
 						$td.addClass("highlight");
 					}
 					if (this.grid[i][j].piece){
-						$td.text(this.grid[i][j].piece.name);
 						var name = this.grid[i][j].piece.name;
 						var nameArray = name.split('-');
+<<<<<<< HEAD
 					if (nameArray[0] === '1' && $option.value === 'default'){
+=======
+					$option.on("change", function(event){
+					if($option.val() === "default"){
+					if (nameArray[0] === '1'){
+>>>>>>> b14dea9ca81af5cbff656daa2c933fe07941fe29
 						switch(nameArray[1]){
 								case 'p':
 									$td.html('&#9817;');
@@ -110,7 +116,56 @@ function Game(){
 									break;
 					}
 				}
- 			}
+				}
+				if($option.val() === "doctorWho"){
+					if(nameArray[0] === '1'){
+						switch(nameArray[1]){
+							case 'p':
+							createImgTag('images/doctor_who/k9wpawn.jpg', $td);
+							break;
+							case 'r':
+							createImgTag('images/doctor_who/tardiswrook.jpg', $td);
+							break;
+							case 'kn':
+							createImgTag('images/doctor_who/riverwknight.jpg', $td);
+							break;
+							case 'b':
+							createImgTag('images/doctor_who/jackwbishop.jpg', $td);
+							break;
+							case 'q':
+							createImgTag('images/doctor_who/clarawqueen.jpg', $td);
+							break;
+							case 'k':
+							createImgTag('images/doctor_who/drwhowking.jpg', $td);
+							break;
+						}
+					}else{
+						switch(nameArray[1]){
+							case 'p':
+							createImgTag('images/doctor_who/droidbpawn.jpg', $td);
+							break;
+							case 'r':
+							createImgTag('images/doctor_who/angelbrook.jpg', $td);
+							break;
+							case 'kn':
+							createImgTag('images/doctor_who/monkbknight.jpg', $td);
+							break;
+							case 'b':
+							createImgTag('images/doctor_who/cybermenbbishop.jpg', $td);
+							break;
+							case 'q':
+							createImgTag('images/doctor_who/sirenbqueen.jpg', $td);
+							break;
+							case 'k':
+							createImgTag('images/doctor_who/dalekbking.jpg', $td);
+							break;
+						}
+					}
+				}
+				});
+			}
+ 		
+ 			
       $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
