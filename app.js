@@ -66,7 +66,7 @@ function Game(){
 						$td.text(this.grid[i][j].piece.name);
 						var name = this.grid[i][j].piece.name;
 						var nameArray = name.split('-');
-					if (nameArray[0] === '1'){
+					if (nameArray[0] === '1' && option === 'default'){
 						switch(nameArray[1]){
 								case 'p':
 									$td.html('&#9817;');
@@ -110,6 +110,8 @@ function Game(){
 					}
 				}
  			}
+
+
       $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
