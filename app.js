@@ -300,38 +300,41 @@ function Game(){
     var oldCell = this.selected;
     // Make a case to swap pieces if castling is happening
     // if the oldCell is a king and the newCell is a rook
-    if(oldCell.piece.name.split('-')[1] === 'k' &&
+    if(oldCell.piece.type === 'k' &&
        newCell.piece &&
-       newCell.piece.name.split('-')[1] === 'r'){
+       newCell.piece.type === 'r'){
       //carry out a swapping of pieces if this is a castling move 
       //figure which side the rook is on
-      var newKingSpot = newCell.x === 0?2:6,
-          castling = newCell.y;
-      //move the king two space towards that way
+      var newKingCol = newCell.x === 0?2:6,
+          newKingRow = newCell.y;
+      //move the king two space towards the rook
       swap = oldCell.piece;
       oldCell.piece = null;
-      this.grid[castling][newKingSpot].piece = swap;
-      this.grid[castling][newKingSpot].piece.moved = true;
+      this.grid[newKingRow][newKingCol].piece = swap;
+      this.grid[newKingRow][newKingCol].piece.moved = true;
       //move the rook outside the king
       swap = newCell.piece;
       newCell.piece = null;
-      var rookMovement = newKingSpot === 6? -1: +1;
-      this.grid[castling][newKingSpot+rookMovement].piece = swap;
+      //find out which side of the king the rook should be on
+      //depending on which side the king is moving to
+      var rookMovement = newKingCol === 6? -1: +1;
+      this.grid[newKingRow][newKingCol+rookMovement].piece = swap;
     }
     //Otherwise process move as normal.
     else {
       //if the pawn is moving sideways and there is no piece
       //present, it is an enPassant, so kill the enPassant piece;
-      if(oldCell.piece.name.split('-')[1] ==='p' &&
+      if(oldCell.piece.type ==='p' &&
         oldCell.x !== newCell.x &&
         !newCell.piece){
         this.enPassant.piece = null;
       }
       //check if this is a pawn's first move and it is moving 2,
       //if so, enPassant should equal the newCell otherwise
-      //set enPassant to false;
+      //set enPassant to false;passandDir is where the pawn
+      //moving 2 spaces should move
       var passantDir = this.player ? 2: -2;
-      if(oldCell.piece.name.split('-')[1] === 'p' &&
+      if(oldCell.piece.type === 'p' &&
         oldCell.y+passantDir === newCell.y){
         this.enPassant = newCell;
       }else{this.enPassant = false;}
@@ -359,7 +362,6 @@ function Game(){
         i,j,k,
         checkmate = false;
 
-
     if(!isKingSafe(this)){
       //do more stuff to see if the check is a checkmate
       this.calcMoves(king.x, king.y);
@@ -367,15 +369,7 @@ function Game(){
       checkmate = true;
 
       //get all the players pieces
-      var playersPieces = [];
-      for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
-          var cell = grid[i][j];
-          if(cell.piece && cell.piece.player === player ){
-            playersPieces.push(cell);
-          }
-        }
-      }
+      var playersPieces = this.piecesOfPlayer(player);
       for (i = 0; i < playersPieces.length; i++) {
       //  loop through the pieces
         var checkMoves = this.possibleMoves(playersPieces[i].x,
@@ -455,11 +449,13 @@ function Game(){
       swap = newCell.piece;
       newCell.piece = cell.piece;
       //swap the pieces if this is a castling move
-      if(castling!==false && newCell.y ===castling && newCell.x ===7)
-        cell.piece = swap;
+      if(castling!==false && newCell.y ===castling &&
+         (newCell.x === 0 || newCell.x === 7) &&
+         oldCell.piece.type === 'k')
+        {cell.piece = swap;}
       else
         cell.piece = null;
-      //if the king isn't safe, remove move from array
+      //if the king isn't safe, set safety to false
       if(!isKingSafe(this)){
         safety = false;
       }
@@ -479,19 +475,25 @@ function Game(){
 
 
     function pushIfAvailable(result, x, y){
-      if(grid[y] && grid[y][x]){
-        var cell = grid[y][x];
-
+      var cell = null;
+      if(grid[y] && grid[y][x])
+        cell = grid[y][x];
+      //do not push cell in if it does not exist
+      if(cell){
+        //If the cell is an enemies piece, push it in the result
         if(cell.piece && cell.piece.player !== player)
           result.push(cell);
+        //if the cell is unoccupied, push it in the result
         else if(!cell.piece)
           result.push(cell);
+        //if it is a friendly piece do not push it in the result
         else 
           return false;
       }
     }
     
     function king(game){
+      //push in all of the King's neighbors if available
       var result = [];
       for (i = -1; i < 2; i++) {
         for (j = -1; j < 2; j++) {
@@ -503,7 +505,7 @@ function Game(){
       //unmoved and the empty spaces are free
       var kingY = game.player ? 0 : 7,
           kingRow = game.grid[kingY];
-      //if the rook exists and is unmoved
+      //if the king-side rook exists and is unmoved
       if(kingRow[7].piece && !kingRow[7].piece.moved &&
         //and both pieces inbetween are vacant
         !kingRow[6].piece && !kingRow[5].piece){
@@ -511,8 +513,9 @@ function Game(){
         result.push(kingRow[7]);
         castling = kingY;
       }
+      //if the queen side rook exists and is unmoved
       if(kingRow[0].piece && !kingRow[0].piece.moved &&
-        //and both pieces inbetween are vacant
+        //and all three pieces inbetween are vacant
         !kingRow[1].piece && !kingRow[2].piece && !kingRow[3].piece){
         //push the rook into possible moves
         result.push(kingRow[0]);
@@ -540,22 +543,20 @@ function Game(){
       //able to move twice if it is the first move
       var direction = player ? 1 : -1,
           result = [];
-      if (grid[y+direction] && grid[y+direction][x] && !grid[y+direction][x].piece){
+      if (ctx.cellExists(x,y+direction) && !grid[y+direction][x].piece){
         result.push(grid[y+direction][x]);
-        if(!piece.moved&&grid[y+direction*2] &&
-          grid[y+direction*2][x] &&
+        if(!piece.moved&&
+          ctx.cellExists(x,y+direction*2) &&
           !grid[y+direction*2][x].piece){ 
           result.push(grid[y+direction*2][x]);
         }
       }
       if(grid[y+direction]){
         //Handle sideways attacking
-        if (grid[y+direction][x+1] &&
-            grid[y+direction][x+1].piece &&
+        if (ctx.pieceExists(x+1,y+direction) &&
             grid[y+direction][x+1].piece.player!==player)
               {result.push(grid[y+direction][x+1]);}
-        if (grid[y+direction][x-1] &&
-            grid[y+direction][x-1].piece &&
+        if (ctx.pieceExists(x-1,y+direction) &&
             grid[y+direction][x-1].piece.player!==player)
               {result.push(grid[y+direction][x-1]);}
         //Handle enPassants
