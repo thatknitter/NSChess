@@ -118,41 +118,68 @@ function Game(){
  	};
 	};
   
-	this.possibleMoves = function(x,y,player){
+	this.possibleMoves = function(x,y,player,mateCheck){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
+    // kingCheck is a bool that will be true if we are 
+    // checking for enemies moves, to avoid infinite loops
     var grid = this.grid, 
         cell = grid[y][x],
         player = player || this.player,
         piece = cell.piece;
     if (!piece) {return;}
 
+    var possibleMoveArray = [];
     switch(piece.name.split('-')[1]){
       case 'p':
-        return pawn(this);
+        possibleMoveArray=(pawn(this));
+        break;
       case 'r':
-        return rbq([[0,1],[0,-1],[1,0],[-1,0]]);
+        possibleMoveArray = rbq([[0,1],[0,-1],[1,0],[-1,0]]);
+        break;
       case 'kn':
-        return knight();
+        possibleMoveArray = knight();
+        break;
       case 'b':
-        return rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
+        possibleMoveArray = rbq([[1,1],[1,-1],[-1,1],[-1,-1]]);
+        break;
       case 'q':
-        return rbq([[1,1],[1,-1],[-1,1],[-1,-1],
+        possibleMoveArray = rbq([[1,1],[1,-1],[-1,1],[-1,-1],
                    [0,1],[0,-1],[1,0],[-1,0]]);
+        break;
       case 'k':
-        return king();
+        possibleMoveArray = king();
+        break;
     }
-
-    function king(){
-      var result = [];
-      for (i = -1; i < 2; i++) {
-        for (j = -1; j < 2; j++) {
-          if(!(i===0 && j===0))
-            pushIfAvailable(result, x+j, y+i);
+    //make sure none of the possible moves put the king in danger, if
+    //so, remove them from the array;
+    if(!mateCheck){
+      var arrLength = possibleMoveArray.length;
+      for (var i = 0; i < arrLength; i++) {
+        var newCell = possibleMoveArray[i],
+            swap,
+            safety = true;
+        //simulate the move
+        swap = newCell.piece;
+        newCell.piece = cell.piece;
+        cell.piece = null;
+        //if the king isn't safe, remove move from array
+        if(!isKingSafe(this)){
+          safety = false;
+        }
+        //reset the move
+        cell.piece = newCell.piece;
+        newCell.piece = swap;
+        if (!safety){
+          possibleMoveArray.splice(i,1);
+          i--;
+          arrLength--;
         }
       }
-      return result;
     }
+
+    return possibleMoveArray;
+
 
     function pushIfAvailable(result, x, y){
       if(grid[y] && grid[y][x]){
@@ -165,6 +192,17 @@ function Game(){
         else 
           return false;
       }
+    }
+    
+    function king(){
+      var result = [];
+      for (i = -1; i < 2; i++) {
+        for (j = -1; j < 2; j++) {
+          if(!(i===0 && j===0))
+            pushIfAvailable(result, x+j, y+i);
+        }
+      }
+      return result;
     }
 
     function knight(){
@@ -237,7 +275,7 @@ function Game(){
           direction[1] += directions[i][1];
         }
       }
-    return result;
+      return result;
     }
   };
 
@@ -283,7 +321,7 @@ function Game(){
     //alerts him and selects the king or ends the game.
     var grid = this.grid,
         player = this.player,
-        king = findKing(),
+        king = findKing(this),
         i,j,k,
         checkmate = false;
 
@@ -332,41 +370,39 @@ function Game(){
     }
 
     return checkmate;
+  };
 
-    
-    function isKingSafe(game){
-      king = findKing();
-      for (var k = 0; k < 8; k++) {
-        for (var l = 0; l < 8; l++) {
-          var cell = grid[k][l];
-          //for every enemy piece
-          if(cell.piece && cell.piece.player !== player){
-            //calculate moves and see if king can be hit
-            var moves = game.possibleMoves(l,k,!player);
-            for (var m = 0; m < moves.length; m++) {
-              //if it can, set checked to true
-              if(moves[m].x === king.x && moves[m].y === king.y){
-                return false;
-              }
+  function isKingSafe(game){
+    var king = findKing(game);
+    for (var k = 0; k < 8; k++) {
+      for (var l = 0; l < 8; l++) {
+        var cell = game.grid[k][l];
+        //for every enemy piece
+        if(cell.piece && cell.piece.player !== game.player){
+          //calculate moves and see if king can be hit
+          var moves = game.possibleMoves(l,k,!game.player, true);
+          for (var m = 0; m < moves.length; m++) {
+            //if it can, set checked to true
+            if(moves[m].x === king.x && moves[m].y === king.y){
+              return false;
             }
           }
         }
       }
-      return true;
     }
+    return true;
+  }
 
-    function findKing(){
-      for (var i = 0; i < grid.length; i++) {
-        for (var j = 0; j < grid.length; j++) {
-          var cell = grid[i][j];
-          if(cell.piece && cell.piece.player === player &&
+    function findKing(game){
+      for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+          var cell = game.grid[i][j];
+          if(cell.piece && cell.piece.player === game.player &&
             cell.piece.name.split('-')[1] === 'k')
               return cell;
         }
       }
     }
-
-  };
 
   function startingPiece(x, y){
     //returns a Piece if a piece is on the board at
