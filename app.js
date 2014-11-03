@@ -163,8 +163,14 @@ function Game(){
 			}
 			table.append($tr);
  	};
+ 	function createImgTag(text, td){
+		var $image = $('<img></img>');
+		$image.attr('src', text);
+		$td.append($image);
 	};
   
+	};
+	
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
