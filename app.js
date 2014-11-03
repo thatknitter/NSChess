@@ -67,7 +67,7 @@ function Game(){
 						$td.text(this.grid[i][j].piece.name);
 						var name = this.grid[i][j].piece.name;
 						var nameArray = name.split('-');
-					if (nameArray[0] === '1' && option === 'default'){
+					if (nameArray[0] === '1' && $option.value === 'default'){
 						switch(nameArray[1]){
 								case 'p':
 									$td.html('&#9817;');
@@ -110,6 +110,51 @@ function Game(){
 									break;
 					}
 				}
+			/*	if (nameArray[0] === '1' && $option.value === 'breakBad'){
+						switch(nameArray[1]){
+								case 'p':
+									$td.html('&#9817;');
+									break;
+								case 'r':
+									$td.html('&#9814;');
+									break;
+								case 'kn':
+									$td.html('&#9816;');
+									break;
+								case 'b':
+									$td.html('&#9815;');
+									break;
+								case 'q':
+									$td.html('&#9813;');
+									break;
+								case 'k':
+									$td.html('&#9812;');
+									break;
+						} 
+					} else {
+							switch(nameArray[1]){
+								case 'p':
+									$td.html('&#9823;');
+									break;
+								case 'r':
+									$td.html('&#9820;');
+									break;
+								case 'kn':
+									$td.html('&#9822;');
+									break;
+								case 'b':
+									$td.html('&#9821;');
+									break;
+								case 'q':
+									$td.html('&#9819;');
+									break;
+								case 'k':
+									$td.html('&#9818;');
+									break;
+					}
+				}*/
+
+
  			}
 
 
