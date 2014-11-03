@@ -110,50 +110,16 @@ function Game(){
 									break;
 					}
 				}
-			/*	if (nameArray[0] === '1' && $option.value === 'breakBad'){
+				if (option.value === 'breakingBad'){
+					if (nameArray[0] === '1'){
 						switch(nameArray[1]){
-								case 'p':
-									$td.html('&#9817;');
-									break;
-								case 'r':
-									$td.html('&#9814;');
-									break;
-								case 'kn':
-									$td.html('&#9816;');
-									break;
-								case 'b':
-									$td.html('&#9815;');
-									break;
-								case 'q':
-									$td.html('&#9813;');
-									break;
-								case 'k':
-									$td.html('&#9812;');
-									break;
-						} 
-					} else {
-							switch(nameArray[1]){
-								case 'p':
-									$td.html('&#9823;');
-									break;
-								case 'r':
-									$td.html('&#9820;');
-									break;
-								case 'kn':
-									$td.html('&#9822;');
-									break;
-								case 'b':
-									$td.html('&#9821;');
-									break;
-								case 'q':
-									$td.html('&#9819;');
-									break;
-								case 'k':
-									$td.html('&#9818;');
-									break;
-					}
-				}*/
-
+							case 'p':
+								createImgTag(/images/breaking_bad/hank_pawn_black.jpg, $td);
+								break;
+							case 'r':
+								createImgTag(/images/breaking_bad/hank_pawn_black.jpg, $td);
+								break;
+					
 
  			}
 
@@ -163,6 +129,8 @@ function Game(){
 			}
 			table.append($tr);
  	};
+
+
  	function createImgTag(text, td){
 		var $image = $('<img></img>');
 		$image.attr('src', text);
