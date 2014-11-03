@@ -7,7 +7,8 @@ $(function(){
 	$(document).on("click", "td", function(){
 		var coordinates = $(this).attr("id").split(","); 
 		var cell = game.grid[+coordinates[1]][+coordinates[0]];
-		//is this a piece the player owns? True = calc moves, elseif highlighted space process move
+		//is this a piece the player owns? 
+    //True = calc moves, elseif highlighted space process move
     if(game.mated){
       $('h1').text('Player ' + game.mated + " wins!");
     }
@@ -121,8 +122,6 @@ function Game(){
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
-    // kingCheck is a bool that will be true if we are 
-    // checking for enemies moves, to avoid infinite loops
     var grid = this.grid, 
         cell = grid[y][x],
         castling = false, 
@@ -208,7 +207,7 @@ function Game(){
             pushIfAvailable(result, x+j, y+i);
         }
       }
-      // Make king be able to castle if rook and king are both
+      //Make king be able to castle if rook and king are both
       //unmoved and the empty spaces are free
       var kingY = game.player ? 0 : 7,
           kingRow = game.grid[kingY];
@@ -218,6 +217,13 @@ function Game(){
         !kingRow[6].piece && !kingRow[5].piece){
         //push the rook into possible moves
         result.push(kingRow[7]);
+        castling = kingY;
+      }
+      if(kingRow[0].piece && !kingRow[0].piece.moved &&
+        //and both pieces inbetween are vacant
+        !kingRow[1].piece && !kingRow[2].piece && !kingRow[3].piece){
+        //push the rook into possible moves
+        result.push(kingRow[0]);
         castling = kingY;
       }
       
@@ -326,23 +332,32 @@ function Game(){
        newCell.piece &&
        newCell.piece.name.split('-')[1] === 'r'){
      //carry out a swapping of pieces if this is a castling move 
-      var swap = newCell.piece;
-      newCell.piece = oldCell.piece;
-      oldCell.piece = swap;
-      oldCell.piece.moved = newCell.piece.moved = true;
+      //figure which side the rook is on
+      var newKingSpot = newCell.x === 0?2:6,
+          castling = newCell.y;
+      //move the king two space towards that way
+      swap = oldCell.piece;
+      oldCell.piece = null;
+      this.grid[castling][newKingSpot].piece = swap;
+      this.grid[castling][newKingSpot].piece.moved = true;
+      //move the rook outside the king
+      swap = newCell.piece;
+      newCell.piece = null;
+      var rookMovement = newKingSpot === 6? -1: +1;
+      this.grid[castling][newKingSpot+rookMovement].piece = swap;
     }
     //otherwise delete the piece that was in the new cell.
     else {
       newCell.piece = oldCell.piece;
       newCell.piece.moved = true;
       oldCell.piece = undefined;
+      //Make pawn turn into queen if it has traversed entire board
+      var finalRow = this.player ? 7 : 0;
+      if(newCell.piece.name.split('-')[1]==='p'&&newCell.y ===finalRow){
+        newCell.piece.name = newCell.piece.name.replace('p','q');
+      }
     }    
     this.selected = null;
-    //Make pawn turn into queen if it has traversed entire board
-    var finalRow = this.player ? 7 : 0;
-    if(newCell.piece.name.split('-')[1]==='p'&&newCell.y ===finalRow){
-      newCell.piece.name = newCell.piece.name.replace('p','q');
-    }
     //clear the highlight and switch the players
     clearHighlight(this.grid);
     this.player = !this.player;
@@ -408,7 +423,7 @@ function Game(){
         this.mated = !player? 1 : 2;
       }
     }else{
-      $('h1').html('Chess');
+      $('h1').html('Player ' + (this.player?1:2) + "'s turn.");
     }
 
     return checkmate;
