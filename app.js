@@ -1,8 +1,14 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
+	var $option = $("#sets");
+	var optionValue = $option.val();
+	$option.on("change", function(){
+		optionValue = $option.val();
+		game.drawGrid($table, optionValue);
+	});
 	$("table").ready(function(){
-		game.drawGrid($table);
+		game.drawGrid($table, optionValue);
 	$(document).on("click", "td", function(){
 		var coordinates = $(this).attr("id").split(","); 
 		var cell = game.grid[+coordinates[1]][+coordinates[0]];
@@ -13,11 +19,11 @@ $(function(){
     }
 		else if(!cell.highlight && cell.piece && cell.piece.player === game.player){
 			game.calcMoves(+coordinates[0], +coordinates[1]);
-			game.drawGrid($table);
+			game.drawGrid($table, optionValue);
 		}else if(cell.highlight){
 			game.processMove(+coordinates[0], +coordinates[1]);
       game.isMated();
-			game.drawGrid($table);
+			game.drawGrid($table, optionValue);
       if(game.mated){
         $('h1').text('Player ' + game.mated + " wins!");
       }
@@ -50,7 +56,7 @@ function Game(){
   this.mated = false;
   this.enPassant = false;
 
-  this.drawGrid = function(table){
+  this.drawGrid = function(table, option){
 		table.empty();					// clears table 
 		for (i = 0; i < 8; i++) {
 			var $tr = $('<tr></tr>');
@@ -67,8 +73,8 @@ function Game(){
 					if (this.grid[i][j].piece){
 						var name = this.grid[i][j].piece.name;
 						var nameArray = name.split('-');
-					$option.on("change", function(event){
-					if($option.val() === "default"){
+					
+					if(option === "default"){
 					if (nameArray[0] === '1'){
 						switch(nameArray[1]){
 								case 'p':
@@ -113,7 +119,7 @@ function Game(){
 					}
 				}
 				}
-				if($option.val() === "doctorWho"){
+				if(option === "doctorWho"){
 					if(nameArray[0] === '1'){
 						switch(nameArray[1]){
 							case 'p':
@@ -158,6 +164,7 @@ function Game(){
 						}
 					}
 				}
+<<<<<<< HEAD
 				if($option.val() === "breakBad"){
 					if(nameArray[0] === '1'){
 						switch(nameArray[1]){
@@ -202,6 +209,9 @@ function Game(){
 							break;
 					}
 				}
+=======
+				
+>>>>>>> 1632477c62bceea52bb5222602552928cb15b412
 			}
 		}
  		
