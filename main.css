@@ -3,6 +3,11 @@ h1 {
 	text-align: center;
 }
 
+h3 {
+	font-family:'Big Caslon', 'Book Antiqua', 'Palatino Linotype', Georgia, serif;
+	margin-top: -600px;
+}
+
 .black {
 	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
 	color: #000000;
@@ -29,7 +34,7 @@ td {
 	border-color: #000000;
 	border-width: 1pt;
 	font-size: 20pt;
-
+	text-align: center;
 }
 
 td.black {
