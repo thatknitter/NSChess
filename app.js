@@ -110,33 +110,61 @@ function Game(){
 									break;
 					}
 				}
-				if (option.value === 'breakingBad'){
-					if (nameArray[0] === '1'){
-						switch(nameArray[1]){
-							case 'p':
-								createImgTag(/images/breaking_bad/hank_pawn_black.jpg, $td);
-								break;
-							case 'r':
-								createImgTag(/images/breaking_bad/hank_pawn_black.jpg, $td);
-								break;
-					
-
  			}
-
-
       $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
 			table.append($tr);
  	};
 
-
  	function createImgTag(text, td){
 		var $image = $('<img></img>');
 		$image.attr('src', text);
 		$td.append($image);
-	};
-
+			if (nameArray[0] === '1' && $option.value === 'breakBad'){
+				switch(nameArray[1]){
+					case 'p':
+						createImgTag(/images/breaking_bad/hank_pawn_black.jpg, $td);
+						break;
+					case 'r':
+						createImgTag(/images/breaking_bad/gus_rook_black.jpg, $td);
+						break;
+					case 'kn':
+						createImgTag(/images/breaking_bad/aaron_knight_black.jpg, $td);
+						break;
+					case 'b':
+						createImgTag(/images/breaking_bad/gus_bishop_black.jpg, $td);
+						break;
+					case 'q':
+						createImgTag(/images/breaking_bad/skyler_black.jpg, $td);
+						break;
+					case 'k':
+						createImgTag(/images/breaking_bad/walter_king_black.jpg, $td);
+						break;
+				}
+			} else {
+				switch(nameArray[1]){
+					case 'p':
+						createImgTag(/images/breaking_bad/hank_pawn_white.jpg, $td);
+						break;
+					case 'r':
+						createImgTag(/images/breaking_bad/gus_rook_white.jpg, $td);
+						break;
+					case 'kn':
+						createImgTag(/images/breaking_bad/aaron_knight_white.jpg, $td);
+						break;
+					case 'b':
+						createImgTag(/images/breaking_bad/gus_bishop_white.jpg, $td);
+						break;
+					case 'q':
+						createImgTag(/images/breaking_bad/skyler_white.jpg, $td);
+						break;
+					case 'k':
+						createImgTag(/images/breaking_bad/walter_king_white.jpg, $td);
+						break;
+				}
+			}
+		};
   };
 
   this.calcMoves = function(x,y){
