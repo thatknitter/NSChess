@@ -11,7 +11,7 @@ $(function(){
     if(game.mated){
       $('h1').text('Player ' + game.mated + " wins!");
     }
-		else if(cell.piece && cell.piece.player === game.player){
+		else if(!cell.highlight && cell.piece && cell.piece.player === game.player){
 			game.calcMoves(+coordinates[0], +coordinates[1]);
 			console.log("Hey, this does something");
 			game.drawGrid($table);
@@ -118,15 +118,16 @@ function Game(){
  	};
 	};
   
-	this.possibleMoves = function(x,y,player,mateCheck){
+	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
     // kingCheck is a bool that will be true if we are 
     // checking for enemies moves, to avoid infinite loops
     var grid = this.grid, 
         cell = grid[y][x],
-        piece = cell.piece;
-    player = player !== undefined ? player : this.player;
+        castling = false, 
+        piece = cell.piece,
+        player = this.player;
 
     if (!piece) {return;}
 
@@ -149,33 +150,37 @@ function Game(){
                    [0,1],[0,-1],[1,0],[-1,0]]);
         break;
       case 'k':
-        possibleMoveArray = king();
+        possibleMoveArray = king(this);
         break;
     }
     //make sure none of the possible moves put the king in danger, if
     //so, remove them from the array;
-    if(!mateCheck){
-      var arrLength = possibleMoveArray.length;
-      for (var i = 0; i < arrLength; i++) {
-        var newCell = possibleMoveArray[i],
-            swap,
-            safety = true;
-        //simulate the move
-        swap = newCell.piece;
-        newCell.piece = cell.piece;
+    var arrLength = possibleMoveArray.length;
+    for (var i = 0; i < arrLength; i++) {
+      var newCell = possibleMoveArray[i],
+          swap, 
+          safety = true;
+      //simulate the move
+      swap = newCell.piece;
+      newCell.piece = cell.piece;
+      //swap the pieces if this is a castling move
+      if(castling!==false && newCell.y ===castling && newCell.x ===7)
+        cell.piece = swap;
+      else
         cell.piece = null;
-        //if the king isn't safe, remove move from array
-        if(!isKingSafe(this)){
-          safety = false;
-        }
-        //reset the move
-        cell.piece = newCell.piece;
-        newCell.piece = swap;
-        if (!safety){
-          possibleMoveArray.splice(i,1);
-          i--;
-          arrLength--;
-        }
+      //if the king isn't safe, remove move from array
+      if(!isKingSafe(this)){
+        safety = false;
+      }
+      //reset the move
+      cell.piece = newCell.piece;
+      newCell.piece = swap;
+      //if it is not safe, splice it out of the array and 
+      //set the array length and i back to not break loop
+      if (!safety){
+        possibleMoveArray.splice(i,1);
+        i--;
+        arrLength--;
       }
     }
 
@@ -195,7 +200,7 @@ function Game(){
       }
     }
     
-    function king(){
+    function king(game){
       var result = [];
       for (i = -1; i < 2; i++) {
         for (j = -1; j < 2; j++) {
@@ -203,6 +208,19 @@ function Game(){
             pushIfAvailable(result, x+j, y+i);
         }
       }
+      // Make king be able to castle if rook and king are both
+      //unmoved and the empty spaces are free
+      var kingY = game.player ? 0 : 7,
+          kingRow = game.grid[kingY];
+      //if the rook exists and is unmoved
+      if(kingRow[7].piece && !kingRow[7].piece.moved &&
+        //and both pieces inbetween are vacant
+        !kingRow[6].piece && !kingRow[5].piece){
+        //push the rook into possible moves
+        result.push(kingRow[7]);
+        castling = kingY;
+      }
+      
       return result;
     }
 
@@ -303,10 +321,29 @@ function Game(){
     //x,y coordinates of the arguments.
     var newCell = this.grid[y][x]; 
     var oldCell = this.selected;
-    newCell.piece = oldCell.piece;
-    oldCell.piece = undefined;
-    newCell.piece.moved = true;
+    // Make a case to swap pieces if castling is happening
+    if(oldCell.piece.name.split('-')[1] === 'k' &&
+       newCell.piece &&
+       newCell.piece.name.split('-')[1] === 'r'){
+     //carry out a swapping of pieces if this is a castling move 
+      var swap = newCell.piece;
+      newCell.piece = oldCell.piece;
+      oldCell.piece = swap;
+      oldCell.piece.moved = newCell.piece.moved = true;
+    }
+    //otherwise delete the piece that was in the new cell.
+    else {
+      newCell.piece = oldCell.piece;
+      newCell.piece.moved = true;
+      oldCell.piece = undefined;
+    }    
     this.selected = null;
+    //Make pawn turn into queen if it has traversed entire board
+    var finalRow = this.player ? 7 : 0;
+    if(newCell.piece.name.split('-')[1]==='p'&&newCell.y ===finalRow){
+      newCell.piece.name = newCell.piece.name.replace('p','q');
+    }
+    //clear the highlight and switch the players
     clearHighlight(this.grid);
     this.player = !this.player;
   };
@@ -378,23 +415,89 @@ function Game(){
   };
 
   function isKingSafe(game){
-    var king = findKing(game);
-    for (var k = 0; k < 8; k++) {
-      for (var l = 0; l < 8; l++) {
-        var cell = game.grid[k][l];
-        //for every enemy piece
-        if(cell.piece && cell.piece.player !== game.player){
-          //calculate moves and see if king can be hit
-          var moves = game.possibleMoves(l,k,!game.player, true);
-          for (var m = 0; m < moves.length; m++) {
-            //if it can, set checked to true
-            if(moves[m].x === king.x && moves[m].y === king.y){
-              return false;
-            }
-          }
+    var king = findKing(game),
+        grid = game.grid,
+        player = game.player,
+        x = king.x, y = king.y;
+    //check pawns
+    var oppositeDirection = game.player?1:-1,
+        oneRowUp = game.grid[king.y+oppositeDirection];
+    if(oneRowUp &&
+       oneRowUp[king.x+1] &&
+       oneRowUp[king.x+1].piece && 
+       oneRowUp[king.x+1].piece.player !== player &&
+       oneRowUp[king.x+1].piece.name.split('-')[1]==='p')
+        return false;
+    if(oneRowUp &&
+       oneRowUp[king.x-1] &&
+       oneRowUp[king.x-1].piece && 
+       oneRowUp[king.x-1].piece.player !== player &&
+       oneRowUp[king.x-1].piece.name.split('-')[1]==='p')
+        return false;
+    //check knights
+      var twos = [2,-2],
+          ones = [1,-1];
+      for (var i = 0; i < 2; i++) {
+        for (var j = 0; j < 2; j++) {
+          if(grid[y+ones[i]] &&
+             grid[y+ones[i]][x+twos[j]] &&
+             grid[y+ones[i]][x+twos[j]].piece &&
+             grid[y+ones[i]][x+twos[j]].piece.player!==player &&
+             grid[y+ones[i]][x+twos[j]].piece.name
+              .split('-')[1] === 'k')
+                {return false;}
+          if(grid[y+twos[j]] &&
+             grid[y+twos[j]][x+ones[i]] &&
+             grid[y+twos[j]][x+ones[i]].piece &&
+             grid[y+twos[j]][x+ones[i]].piece.player!==player &&
+             grid[y+twos[j]][x+ones[i]].piece.name
+              .split('-')[1] === 'k')
+                {return false;}
         }
       }
+    //check rooks and rook-moving queen
+    var directions = [[0,1],[1,0],[-1,0],[0,-1]];
+    for (var i = 0; i < 4; i++) {
+      var direction = directions[i].slice();
+      for (var move = 0; move < 8; move++) {
+        var curCell = null;
+        if(grid[y+direction[0]] && grid[y+direction[0]][x+direction[1]]){
+          curCell = grid[y+direction[0]][x+direction[1]];
+        }
+        if(!curCell) {break;}
+        if(curCell.piece){
+          var rqPiece = curCell.piece,
+              rqType = rqPiece.name.split('-')[1];
+          if(rqPiece.player !== player &&
+            (rqType === 'r' || rqType === 'q')){return false;}
+          else {break;}
+        }
+        direction[0] += directions[i][0];
+        direction[1] += directions[i][1];
+      }
     }
+    //check bishops and bishop-moving queens
+    directions = [[1,1],[1,-1],[-1,1],[-1,-1]];
+    for (var i = 0; i < 4; i++) {
+      var direction = directions[i].slice();
+      for (var move = 0; move < 8; move++) {
+        var curCell = null;
+        if(grid[y+direction[0]] && grid[y+direction[0]][x+direction[1]]){
+          curCell = grid[y+direction[0]][x+direction[1]];
+        }
+        if(!curCell) {break;}
+        if(curCell.piece){
+          var bqPiece = curCell.piece,
+              bqType = bqPiece.name.split('-')[1];
+          if(bqPiece.player !== player &&
+            (bqType === 'b' || bqType === 'q')){return false;}
+          else {break;}
+        }
+        direction[0] += directions[i][0];
+        direction[1] += directions[i][1];
+      }
+    }
+    //nothing can hit the king
     return true;
   }
 
