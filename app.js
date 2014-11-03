@@ -1,7 +1,7 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	
+	var $option = $("sets");
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$(document).on("click", "td", function(){
@@ -49,6 +49,7 @@ function Game(){
   this.selected = null;
   this.player = true;
   this.mated = false;
+  this.enPassant = false;
 
   this.drawGrid = function(table){
 		table.empty();					// clears table 
@@ -261,11 +262,20 @@ function Game(){
         if (grid[y+direction][x+1] &&
             grid[y+direction][x+1].piece &&
             grid[y+direction][x+1].piece.player!==player)
-              result.push(grid[y+direction][x+1]);
+              {result.push(grid[y+direction][x+1]);}
         if (grid[y+direction][x-1] &&
             grid[y+direction][x-1].piece &&
             grid[y+direction][x-1].piece.player!==player)
-              result.push(grid[y+direction][x-1]);
+              {result.push(grid[y+direction][x-1]);}
+        //Handle enPassants
+        if (ctx.enPassant && grid[y+direction][x-1] &&
+            !grid[y+direction][x-1].piece &&
+            grid[y][x-1].piece===ctx.enPassant.piece)
+              {result.push(grid[y+direction][x-1]);}
+        if (ctx.enPassant && grid[y+direction][x+1] &&
+            !grid[y+direction][x+1].piece &&
+            grid[y][x+1].piece===ctx.enPassant.piece)
+              {result.push(grid[y+direction][x+1]);}
       }
       return result;
     }
@@ -328,10 +338,11 @@ function Game(){
     var newCell = this.grid[y][x]; 
     var oldCell = this.selected;
     // Make a case to swap pieces if castling is happening
+    // if the oldCell is a king and the newCell is a rook
     if(oldCell.piece.name.split('-')[1] === 'k' &&
        newCell.piece &&
        newCell.piece.name.split('-')[1] === 'r'){
-     //carry out a swapping of pieces if this is a castling move 
+      //carry out a swapping of pieces if this is a castling move 
       //figure which side the rook is on
       var newKingSpot = newCell.x === 0?2:6,
           castling = newCell.y;
@@ -346,8 +357,23 @@ function Game(){
       var rookMovement = newKingSpot === 6? -1: +1;
       this.grid[castling][newKingSpot+rookMovement].piece = swap;
     }
-    //otherwise delete the piece that was in the new cell.
+    //Otherwise process move as normal.
     else {
+      //if the pawn is moving sideways and there is no piece
+      //present, it is an enPassant, so kill the enPassant piece;
+      if(oldCell.piece.name.split('-')[1] ==='p' &&
+        oldCell.x !== newCell.x &&
+        !newCell.piece){
+        this.enPassant.piece = null;
+      }
+      //check if this is a pawn's first move and it is moving 2,
+      //if so, enPassant should equal the newCell otherwise
+      //set enPassant to false;
+      var passantDir = this.player ? 2: -2;
+      if(oldCell.piece.name.split('-')[1] === 'p' &&
+        oldCell.y+passantDir === newCell.y){
+        this.enPassant = newCell;
+      }else{this.enPassant = false;}
       newCell.piece = oldCell.piece;
       newCell.piece.moved = true;
       oldCell.piece = undefined;
