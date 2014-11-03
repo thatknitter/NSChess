@@ -136,9 +136,142 @@ function Game(){
 		$image.attr('src', text);
 		$td.append($image);
 	};
-  
-	};
-	
+
+  };
+
+  this.calcMoves = function(x,y){
+    //calculates the possible moves for a selected piece,
+    //sets highlight to true on possible cells.
+    var grid = this.grid, 
+        cell = grid[y][x],
+        possible = this.possibleMoves(x,y);
+    //set the selected piece to the one we are doing 
+    //the highlighting for. 
+    clearHighlight(grid);
+    this.selected = cell;
+    for (i = 0; i < possible.length; i++) {
+      possible[i].highlight = true;
+    }
+  };
+
+  this.processMove = function(x,y){
+    //moves piece from selected cell (selected) to the 
+    //x,y coordinates of the arguments.
+    var newCell = this.grid[y][x]; 
+    var oldCell = this.selected;
+    // Make a case to swap pieces if castling is happening
+    // if the oldCell is a king and the newCell is a rook
+    if(oldCell.piece.name.split('-')[1] === 'k' &&
+       newCell.piece &&
+       newCell.piece.name.split('-')[1] === 'r'){
+      //carry out a swapping of pieces if this is a castling move 
+      //figure which side the rook is on
+      var newKingSpot = newCell.x === 0?2:6,
+          castling = newCell.y;
+      //move the king two space towards that way
+      swap = oldCell.piece;
+      oldCell.piece = null;
+      this.grid[castling][newKingSpot].piece = swap;
+      this.grid[castling][newKingSpot].piece.moved = true;
+      //move the rook outside the king
+      swap = newCell.piece;
+      newCell.piece = null;
+      var rookMovement = newKingSpot === 6? -1: +1;
+      this.grid[castling][newKingSpot+rookMovement].piece = swap;
+    }
+    //Otherwise process move as normal.
+    else {
+      //if the pawn is moving sideways and there is no piece
+      //present, it is an enPassant, so kill the enPassant piece;
+      if(oldCell.piece.name.split('-')[1] ==='p' &&
+        oldCell.x !== newCell.x &&
+        !newCell.piece){
+        this.enPassant.piece = null;
+      }
+      //check if this is a pawn's first move and it is moving 2,
+      //if so, enPassant should equal the newCell otherwise
+      //set enPassant to false;
+      var passantDir = this.player ? 2: -2;
+      if(oldCell.piece.name.split('-')[1] === 'p' &&
+        oldCell.y+passantDir === newCell.y){
+        this.enPassant = newCell;
+      }else{this.enPassant = false;}
+      newCell.piece = oldCell.piece;
+      newCell.piece.moved = true;
+      oldCell.piece = undefined;
+      //Make pawn turn into queen if it has traversed entire board
+      var finalRow = this.player ? 7 : 0;
+      if(newCell.piece.name.split('-')[1]==='p'&&newCell.y ===finalRow){
+        newCell.piece.name = newCell.piece.name.replace('p','q');
+      }
+    }    
+    this.selected = null;
+    //clear the highlight and switch the players
+    clearHighlight(this.grid);
+    this.player = !this.player;
+  };
+
+  this.isMated = function(){
+    //checks if the current player is in check or checkmate, if so
+    //alerts him and selects the king or ends the game.
+    var grid = this.grid,
+        player = this.player,
+        king = findKing(this),
+        i,j,k,
+        checkmate = false;
+
+
+    if(!isKingSafe(this)){
+      //do more stuff to see if the check is a checkmate
+      this.calcMoves(king.x, king.y);
+      $('h1').html('Player ' + (player?1:2) + ' is in check.' );
+      checkmate = true;
+
+      //get all the players pieces
+      var playersPieces = [];
+      for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+          var cell = grid[i][j];
+          if(cell.piece && cell.piece.player === player ){
+            playersPieces.push(cell);
+          }
+        }
+      }
+      for (i = 0; i < playersPieces.length; i++) {
+      //  loop through the pieces
+        var checkMoves = this.possibleMoves(playersPieces[i].x,
+                                            playersPieces[i].y),
+            swap;
+        for (j = 0; j < checkMoves.length; j++) {
+          // loop through all the moves that a piece can make
+          //apply the move, holding the old piece in swap
+          swap = checkMoves[j].piece;
+          checkMoves[j].piece = playersPieces[i].piece;
+          playersPieces[i].piece = null;
+          //see if the king is still in check, if so set checkmate to
+          //true
+          if(isKingSafe(this)){
+            checkmate = false;
+          }
+          //reset the pieces back to how they were.
+          playersPieces[i].piece = checkMoves[j].piece;
+          checkMoves[j].piece = swap;
+        }
+      }
+      if(checkmate){
+        console.log('checkmate');
+        this.mated = !player? 1 : 2;
+      }
+    }else{
+      $('h1').html('Player ' + (this.player?1:2) + "'s turn.");
+    }
+
+    return checkmate;
+  };
+
+  /////////////////////////////////////////
+  //UTILITY FUNCTIONS LIE UNDERNEATH HERE!!!
+  /////////////////////////////////////////
 	this.possibleMoves = function(x,y){
     // returns an array of cells of possible moves
     // for a piece at a given coordinate
@@ -335,77 +468,18 @@ function Game(){
     }
   };
 
-
-  this.calcMoves = function(x,y){
-    //calculates the possible moves for a selected piece,
-    //sets highlight to true on possible cells.
-    var grid = this.grid, 
-        cell = grid[y][x],
-        possible = this.possibleMoves(x,y);
-    //set the selected piece to the one we are doing 
-    //the highlighting for. 
-    clearHighlight(grid);
-    this.selected = cell;
-    for (i = 0; i < possible.length; i++) {
-      possible[i].highlight = true;
-    }
-  };
-
-  this.processMove = function(x,y){
-    //moves piece from selected cell (selected) to the 
-    //x,y coordinates of the arguments.
-    var newCell = this.grid[y][x]; 
-    var oldCell = this.selected;
-    // Make a case to swap pieces if castling is happening
-    // if the oldCell is a king and the newCell is a rook
-    if(oldCell.piece.name.split('-')[1] === 'k' &&
-       newCell.piece &&
-       newCell.piece.name.split('-')[1] === 'r'){
-      //carry out a swapping of pieces if this is a castling move 
-      //figure which side the rook is on
-      var newKingSpot = newCell.x === 0?2:6,
-          castling = newCell.y;
-      //move the king two space towards that way
-      swap = oldCell.piece;
-      oldCell.piece = null;
-      this.grid[castling][newKingSpot].piece = swap;
-      this.grid[castling][newKingSpot].piece.moved = true;
-      //move the rook outside the king
-      swap = newCell.piece;
-      newCell.piece = null;
-      var rookMovement = newKingSpot === 6? -1: +1;
-      this.grid[castling][newKingSpot+rookMovement].piece = swap;
-    }
-    //Otherwise process move as normal.
-    else {
-      //if the pawn is moving sideways and there is no piece
-      //present, it is an enPassant, so kill the enPassant piece;
-      if(oldCell.piece.name.split('-')[1] ==='p' &&
-        oldCell.x !== newCell.x &&
-        !newCell.piece){
-        this.enPassant.piece = null;
+  this.piecesOfPlayer = function(player){
+    //pieces of Player returns an array of Cells containing pieces
+    //for a supplied player
+    var result = [];
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 8; j++) {
+        if(this.grid[i][j].piece && 
+           this.grid[i][j].piece.player === player)
+          {result.push(this.grid[i][j]);}
       }
-      //check if this is a pawn's first move and it is moving 2,
-      //if so, enPassant should equal the newCell otherwise
-      //set enPassant to false;
-      var passantDir = this.player ? 2: -2;
-      if(oldCell.piece.name.split('-')[1] === 'p' &&
-        oldCell.y+passantDir === newCell.y){
-        this.enPassant = newCell;
-      }else{this.enPassant = false;}
-      newCell.piece = oldCell.piece;
-      newCell.piece.moved = true;
-      oldCell.piece = undefined;
-      //Make pawn turn into queen if it has traversed entire board
-      var finalRow = this.player ? 7 : 0;
-      if(newCell.piece.name.split('-')[1]==='p'&&newCell.y ===finalRow){
-        newCell.piece.name = newCell.piece.name.replace('p','q');
-      }
-    }    
-    this.selected = null;
-    //clear the highlight and switch the players
-    clearHighlight(this.grid);
-    this.player = !this.player;
+    }
+    return result;
   };
 
   function clearHighlight(grid){
@@ -416,118 +490,49 @@ function Game(){
     }
   }
 
-  this.isMated = function(){
-    //checks if the current player is in check or checkmate, if so
-    //alerts him and selects the king or ends the game.
-    var grid = this.grid,
-        player = this.player,
-        king = findKing(this),
-        i,j,k,
-        checkmate = false;
-
-
-    if(!isKingSafe(this)){
-      //do more stuff to see if the check is a checkmate
-      this.calcMoves(king.x, king.y);
-      $('h1').html('Player ' + (player?1:2) + ' is in check.' );
-      checkmate = true;
-
-      //get all the players pieces
-      var playersPieces = [];
-      for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
-          var cell = grid[i][j];
-          if(cell.piece && cell.piece.player === player ){
-            playersPieces.push(cell);
-          }
-        }
-      }
-      for (i = 0; i < playersPieces.length; i++) {
-      //  loop through the pieces
-        var checkMoves = this.possibleMoves(playersPieces[i].x,
-                                            playersPieces[i].y),
-            swap;
-        for (j = 0; j < checkMoves.length; j++) {
-          // loop through all the moves that a piece can make
-          //apply the move, holding the old piece in swap
-          swap = checkMoves[j].piece;
-          checkMoves[j].piece = playersPieces[i].piece;
-          playersPieces[i].piece = null;
-          //see if the king is still in check, if so set checkmate to
-          //true
-          if(isKingSafe(this)){
-            checkmate = false;
-          }
-          //reset the pieces back to how they were.
-          playersPieces[i].piece = checkMoves[j].piece;
-          checkMoves[j].piece = swap;
-        }
-      }
-      if(checkmate){
-        console.log('checkmate');
-        this.mated = !player? 1 : 2;
-      }
-    }else{
-      $('h1').html('Player ' + (this.player?1:2) + "'s turn.");
-    }
-
-    return checkmate;
-  };
-
   function isKingSafe(game){
     var king = findKing(game),
         grid = game.grid,
         player = game.player,
-        x = king.x, y = king.y;
+        x = king.x, y = king.y,
+        i,j;
     //check pawns
     var oppositeDirection = game.player?1:-1,
         oneRowUp = game.grid[king.y+oppositeDirection];
-    if(oneRowUp &&
-       oneRowUp[king.x+1] &&
-       oneRowUp[king.x+1].piece && 
+    if(game.pieceExists(x+1,y+oppositeDirection) &&
        oneRowUp[king.x+1].piece.player !== player &&
-       oneRowUp[king.x+1].piece.name.split('-')[1]==='p')
+       oneRowUp[king.x+1].piece.type==='p')
         return false;
-    if(oneRowUp &&
-       oneRowUp[king.x-1] &&
-       oneRowUp[king.x-1].piece && 
+    if(game.pieceExists(x-1,y+oppositeDirection) &&
        oneRowUp[king.x-1].piece.player !== player &&
-       oneRowUp[king.x-1].piece.name.split('-')[1]==='p')
+       oneRowUp[king.x-1].piece.type==='p')
         return false;
     //check knights
       var twos = [2,-2],
           ones = [1,-1];
-      for (var i = 0; i < 2; i++) {
-        for (var j = 0; j < 2; j++) {
-          if(grid[y+ones[i]] &&
-             grid[y+ones[i]][x+twos[j]] &&
-             grid[y+ones[i]][x+twos[j]].piece &&
+      for (i = 0; i < 2; i++) {
+        for (j = 0; j < 2; j++) {
+          if(game.pieceExists(x+twos[j],y+ones[i]) &&
              grid[y+ones[i]][x+twos[j]].piece.player!==player &&
-             grid[y+ones[i]][x+twos[j]].piece.name
-              .split('-')[1] === 'k')
+             grid[y+ones[i]][x+twos[j]].piece.type === 'kn')
                 {return false;}
-          if(grid[y+twos[j]] &&
-             grid[y+twos[j]][x+ones[i]] &&
-             grid[y+twos[j]][x+ones[i]].piece &&
+          if(game.pieceExists(x+ones[i], y+twos[j]) &&
              grid[y+twos[j]][x+ones[i]].piece.player!==player &&
-             grid[y+twos[j]][x+ones[i]].piece.name
-              .split('-')[1] === 'k')
+             grid[y+twos[j]][x+ones[i]].piece.type === 'kn')
                 {return false;}
         }
       }
     //check rooks and rook-moving queen
-    var directions = [[0,1],[1,0],[-1,0],[0,-1]];
-    for (var i = 0; i < 4; i++) {
-      var direction = directions[i].slice();
-      for (var move = 0; move < 8; move++) {
-        var curCell = null;
-        if(grid[y+direction[0]] && grid[y+direction[0]][x+direction[1]]){
-          curCell = grid[y+direction[0]][x+direction[1]];
-        }
+    var directions = [[0,1],[1,0],[-1,0],[0,-1]],
+        curCell,direction,move;
+    for (i = 0; i < 4; i++) {
+      direction = directions[i].slice();
+      for (move = 0; move < 8; move++) {
+        curCell = game.cellExists(x+direction[1],y+direction[0]);
         if(!curCell) {break;}
         if(curCell.piece){
           var rqPiece = curCell.piece,
-              rqType = rqPiece.name.split('-')[1];
+              rqType = rqPiece.type;
           if(rqPiece.player !== player &&
             (rqType === 'r' || rqType === 'q')){return false;}
           else {break;}
@@ -538,13 +543,10 @@ function Game(){
     }
     //check bishops and bishop-moving queens
     directions = [[1,1],[1,-1],[-1,1],[-1,-1]];
-    for (var i = 0; i < 4; i++) {
-      var direction = directions[i].slice();
-      for (var move = 0; move < 8; move++) {
-        var curCell = null;
-        if(grid[y+direction[0]] && grid[y+direction[0]][x+direction[1]]){
-          curCell = grid[y+direction[0]][x+direction[1]];
-        }
+    for (i = 0; i < 4; i++) {
+      direction = directions[i].slice();
+      for (move = 0; move < 8; move++) {
+        curCell = game.cellExists(x+direction[1],y+direction[0]);
         if(!curCell) {break;}
         if(curCell.piece){
           var bqPiece = curCell.piece,
@@ -557,20 +559,38 @@ function Game(){
         direction[1] += directions[i][1];
       }
     }
+    //check kings
+    for (i = -1; i < 2; i++) {
+      for (j = -1; j < 2; j++) {
+        if(!(i===0 && j===0)){
+          var kPiece = game.pieceExists(x+j,y+i);
+          if(kPiece && kPiece.type === 'k' &&
+             kPiece.player !== game.player)
+            return false;
+        }
+      }
+    }
     //nothing can hit the king
     return true;
   }
 
-    function findKing(game){
-      for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-          var cell = game.grid[i][j];
-          if(cell.piece && cell.piece.player === game.player &&
-            cell.piece.name.split('-')[1] === 'k')
-              return cell;
-        }
-      }
+  this.cellExists = function(x,y){
+    return this.grid[y] && this.grid[y][x];
+  };
+
+  this.pieceExists = function(x,y){
+    return this.cellExists(x,y) && this.grid[y][x].piece;
+  };
+
+  function findKing(game){
+    //get all of the cells containing pieces for the current player
+    var pieces = game.piecesOfPlayer(game.player);
+    //if any of the cells contain the king, return it;
+    for (var i = 0; i < pieces.length; i++) {
+      if(pieces[i].piece.type === 'k')
+        return pieces[i];
     }
+  }
 
   function startingPiece(x, y){
     //returns a Piece if a piece is on the board at
@@ -651,9 +671,10 @@ function Piece(name){
 	//2-b-2		bishop, right
 	//2-kn-2	knight, right
 	//2-r-1		rook, right*/
-  this.name = name?name:undefined;
+  this.name = name;
   this.moved = false;
-  this.player = (this.name!==undefined && this.name.split('-')[0] === '1') ? true : false;
+  this.player = this.name.split('-')[0] === '1' ? true : false;
+  this.type = this.name.split('-')[1];
 
   return this;
 }
