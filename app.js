@@ -180,7 +180,7 @@ function Game(){
 							createImgTag('images/breaking_bad/gus_bishop_black.jpg', $td);
 							break;
 							case 'q':
-							createImgTag('images/breaking_bad/skyler_black.jpg', $td);
+							createImgTag('images/breaking_bad/skyler_queen_black.jpg', $td);
 							break;
 							case 'k':
 							createImgTag('images/breaking_bad/walter_king_black.jpg', $td);
@@ -201,7 +201,7 @@ function Game(){
 							createImgTag('images/breaking_bad/gus_bishop_white.jpg', $td);
 							break;
 							case 'q':
-							createImgTag('images/breaking_bad/skyler_white.jpg', $td);
+							createImgTag('images/breaking_bad/skyler_queen_white.jpg', $td);
 							break;
 							case 'k':
 							createImgTag('images/breaking_bad/walter_king_white.jpg', $td);
@@ -213,58 +213,48 @@ function Game(){
 					if(nameArray[0] === '1'){
 						switch(nameArray[1]){
 							case 'p':
-							createImgTag('images/breaking_bad/hank_pawn_black.jpg', $td);
+							createImgTag('images/the_wire/kenard_pawn_black.jpg', $td);
 							break;
 							case 'r':
-							createImgTag('images/breaking_bad/gus_rook_black.jpg', $td);
+							createImgTag('images/the_wire/bodie_rook_black.jpg', $td);
 							break;
 							case 'kn':
-							createImgTag('images/breaking_bad/aaron_knight_black.jpg', $td);
+							createImgTag('images/the_wire/avon_knight_black.jpg', $td);
 							break;
 							case 'b':
-							createImgTag('images/breaking_bad/gus_bishop_black.jpg', $td);
+							createImgTag('images/the_wire/stringer_bishop_black.jpg', $td);
 							break;
 							case 'q':
-							createImgTag('images/breaking_bad/skyler_black.jpg', $td);
+							createImgTag('images/the_wire/kima_queen_black.jpg', $td);
 							break;
 							case 'k':
-							createImgTag('images/breaking_bad/walter_king_black.jpg', $td);
+							createImgTag('images/the_wire/omar_king_black.jpg', $td);
 							break;
 						}
 					}else{
 						switch(nameArray[1]){
 							case 'p':
-							createImgTag('images/breaking_bad/hank_pawn_white.jpg', $td);
+							createImgTag('images/the_wire/kenard_pawn_white.jpg', $td);
 							break;
 							case 'r':
-							createImgTag('images/breaking_bad/gus_rook_white.jpg', $td);
+							createImgTag('images/the_wire/bodie_rook_white.jpg', $td);
 							break;
 							case 'kn':
-							createImgTag('images/breaking_bad/aaron_knight_white.jpg', $td);
+							createImgTag('images/the_wire/avon_knight_white.jpg', $td);
 							break;
 							case 'b':
-							createImgTag('images/breaking_bad/gus_bishop_white.jpg', $td);
+							createImgTag('images/the_wire/stringer_bishop_white.jpg', $td);
 							break;
 							case 'q':
-							createImgTag('images/breaking_bad/skyler_white.jpg', $td);
+							createImgTag('images/the_wire/kima_queen_white.jpg', $td);
 							break;
 							case 'k':
-							createImgTag('images/breaking_bad/walter_king_white.jpg', $td);
+							createImgTag('images/the_wire/omar_king_black.jpg', $td);
 							break;
 						}
 					}
 				}
-
- 	
-
-
-
-
-
-
-
-
- 			
+			}
       $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
