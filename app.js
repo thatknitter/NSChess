@@ -1,7 +1,6 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	var $option = $("sets");
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$(document).on("click", "td", function(){
@@ -57,7 +56,7 @@ function Game(){
 			var $tr = $('<tr></tr>');
 				for (j = 0; j < 8; j++) {
 					var $td = $('<td></td>');
-					var $option = $("sets");
+					var $option = $("#sets");
 					
 					if (this.grid[i][j].black){
 						$td.addClass("black");
@@ -68,8 +67,8 @@ function Game(){
 					if (this.grid[i][j].piece){
 						var name = this.grid[i][j].piece.name;
 						var nameArray = name.split('-');
-					$option.addEventListener("submit", function(event){
-					if($option.value === "default"){
+					$option.on("change", function(event){
+					if($option.val() === "default"){
 					if (nameArray[0] === '1'){
 						switch(nameArray[1]){
 								case 'p':
@@ -114,7 +113,7 @@ function Game(){
 					}
 				}
 				}
-				if($option.value === "doctorWho"){
+				if($option.val() === "doctorWho"){
 					if(nameArray[0] === '1'){
 						switch(nameArray[1]){
 							case 'p':
@@ -159,7 +158,9 @@ function Game(){
 						}
 					}
 				}
- 			});
+				});
+			}
+ 		
  			
       $td.attr('id', j+","+i);
 			$tr.append($td);
