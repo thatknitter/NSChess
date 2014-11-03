@@ -13,11 +13,9 @@ $(function(){
     }
 		else if(!cell.highlight && cell.piece && cell.piece.player === game.player){
 			game.calcMoves(+coordinates[0], +coordinates[1]);
-			console.log("Hey, this does something");
 			game.drawGrid($table);
 		}else if(cell.highlight){
 			game.processMove(+coordinates[0], +coordinates[1]);
-      console.log("this does something different");
       game.isMated();
 			game.drawGrid($table);
       if(game.mated){
