@@ -125,8 +125,9 @@ function Game(){
     // checking for enemies moves, to avoid infinite loops
     var grid = this.grid, 
         cell = grid[y][x],
-        player = player || this.player,
         piece = cell.piece;
+    player = player !== undefined ? player : this.player;
+
     if (!piece) {return;}
 
     var possibleMoveArray = [];
@@ -230,6 +231,8 @@ function Game(){
           !grid[y+direction*2][x].piece){ 
           result.push(grid[y+direction*2][x]);
         }
+      }
+      if(grid[y+direction]){
         //Handle sideways attacking
         if (grid[y+direction][x+1] &&
             grid[y+direction][x+1].piece &&
@@ -329,7 +332,7 @@ function Game(){
     if(!isKingSafe(this)){
       //do more stuff to see if the check is a checkmate
       this.calcMoves(king.x, king.y);
-      console.log('check');
+      $('h1').html('Player ' + (player?1:2) + ' is in check.' );
       checkmate = true;
 
       //get all the players pieces
@@ -367,6 +370,8 @@ function Game(){
         console.log('checkmate');
         this.mated = !player? 1 : 2;
       }
+    }else{
+      $('h1').html('Chess');
     }
 
     return checkmate;
