@@ -1,9 +1,14 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	var $option = $("sets");
+	var $option = $("#sets");
+	var optionValue = $option.val();
+	$option.on("change", function(){
+		optionValue = $option.val();
+		game.drawGrid($table, optionValue);
+	});
 	$("table").ready(function(){
-		game.drawGrid($table);
+		game.drawGrid($table, optionValue);
 	$(document).on("click", "td", function(){
 		var coordinates = $(this).attr("id").split(","); 
 		var cell = game.grid[+coordinates[1]][+coordinates[0]];
@@ -14,11 +19,11 @@ $(function(){
     }
 		else if(!cell.highlight && cell.piece && cell.piece.player === game.player){
 			game.calcMoves(+coordinates[0], +coordinates[1]);
-			game.drawGrid($table);
+			game.drawGrid($table, optionValue);
 		}else if(cell.highlight){
 			game.processMove(+coordinates[0], +coordinates[1]);
       game.isMated();
-			game.drawGrid($table);
+			game.drawGrid($table, optionValue);
       if(game.mated){
         $('h1').text('Player ' + game.mated + " wins!");
       }
@@ -51,12 +56,14 @@ function Game(){
   this.mated = false;
   this.enPassant = false;
 
-  this.drawGrid = function(table){
+  this.drawGrid = function(table, option){
 		table.empty();					// clears table 
 		for (i = 0; i < 8; i++) {
 			var $tr = $('<tr></tr>');
 				for (j = 0; j < 8; j++) {
 					var $td = $('<td></td>');
+					var $option = $("#sets");
+					
 					if (this.grid[i][j].black){
 						$td.addClass("black");
 					}
@@ -64,9 +71,10 @@ function Game(){
 						$td.addClass("highlight");
 					}
 					if (this.grid[i][j].piece){
-						$td.text(this.grid[i][j].piece.name);
 						var name = this.grid[i][j].piece.name;
 						var nameArray = name.split('-');
+					
+					if(option === "default"){
 					if (nameArray[0] === '1'){
 						switch(nameArray[1]){
 								case 'p':
@@ -110,7 +118,56 @@ function Game(){
 									break;
 					}
 				}
- 			}
+				}
+				if(option === "doctorWho"){
+					if(nameArray[0] === '1'){
+						switch(nameArray[1]){
+							case 'p':
+							createImgTag('images/doctor_who/k9wpawn.jpg', $td);
+							break;
+							case 'r':
+							createImgTag('images/doctor_who/tardiswrook.jpg', $td);
+							break;
+							case 'kn':
+							createImgTag('images/doctor_who/riverwknight.jpg', $td);
+							break;
+							case 'b':
+							createImgTag('images/doctor_who/jackwbishop.jpg', $td);
+							break;
+							case 'q':
+							createImgTag('images/doctor_who/clarawqueen.jpg', $td);
+							break;
+							case 'k':
+							createImgTag('images/doctor_who/drwhowking.jpg', $td);
+							break;
+						}
+					}else{
+						switch(nameArray[1]){
+							case 'p':
+							createImgTag('images/doctor_who/droidbpawn.jpg', $td);
+							break;
+							case 'r':
+							createImgTag('images/doctor_who/angelbrook.jpg', $td);
+							break;
+							case 'kn':
+							createImgTag('images/doctor_who/monkbknight.jpg', $td);
+							break;
+							case 'b':
+							createImgTag('images/doctor_who/cybermenbbishop.jpg', $td);
+							break;
+							case 'q':
+							createImgTag('images/doctor_who/sirenbqueen.jpg', $td);
+							break;
+							case 'k':
+							createImgTag('images/doctor_who/dalekbking.jpg', $td);
+							break;
+						}
+					}
+				}
+				
+			}
+ 		
+ 			
       $td.attr('id', j+","+i);
 			$tr.append($td);
 			}
