@@ -1,7 +1,7 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	
+	var $option = $("sets");
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$(document).on("click", "td", function(){
