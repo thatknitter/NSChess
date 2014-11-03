@@ -1,7 +1,7 @@
 $(function(){
 	var game = new Game();
 	var $table = $("table");
-	
+	var $option = $("sets");
 	$("table").ready(function(){
 		game.drawGrid($table);
 	$(document).on("click", "td", function(){
@@ -116,7 +116,13 @@ function Game(){
 			}
 			table.append($tr);
  	};
+ 	function createImgTag(text, td){
+		var $image = $('<img></img>');
+		$image.attr('src', text);
+		$td.append($image);
 	};
+
+  };
 
   this.calcMoves = function(x,y){
     //calculates the possible moves for a selected piece,
