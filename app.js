@@ -249,7 +249,7 @@ function Game(){
 							createImgTag('images/the_wire/kima_queen_white.jpg', $td);
 							break;
 							case 'k':
-							createImgTag('images/the_wire/omar_king_black.jpg', $td);
+							createImgTag('images/the_wire/omar_king_white.jpg', $td);
 							break;
 						}
 					}
