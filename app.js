@@ -441,7 +441,7 @@ function Game(){
       //swap the pieces if this is a castling move
       if(castling!==false && newCell.y ===castling &&
          (newCell.x === 0 || newCell.x === 7) &&
-         oldCell.piece.type === 'k')
+         piece.type === 'k')
         {cell.piece = swap;}
       else
         cell.piece = null;
