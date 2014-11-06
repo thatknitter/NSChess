@@ -47,7 +47,7 @@ function Game(){
       //if a piece should exist on start of game insert it
       var piece = startingPiece(j,i);
       this.grid[i][j] = new Cell(j,i,piece);
-      if((i+j)%2 === 0) this.grid[i][j].black = true;
+      if((i+j)%2 !== 0) this.grid[i][j].black = true;
     }
   }
 
