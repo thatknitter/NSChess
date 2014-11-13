@@ -39,6 +39,7 @@ function Game(){
   //@mated: if the mage is at checkmate, this will equal the winning
   //  player, 1 or 2
   //@selected: the currently selected cell, if any : Cell
+  //@checked : array if [player1,player2] has been checked
 
   this.grid = [];
   for (i = 0; i < 8; i++) {
@@ -55,6 +56,7 @@ function Game(){
   this.player = true;
   this.mated = false;
   this.enPassant = false;
+  this.checked = [false,false];
 
   this.drawGrid = function(table, option){
 		table.empty();					// clears table 
@@ -437,14 +439,34 @@ function Game(){
           safety = true;
       //simulate the move
       swap = newCell.piece;
-      newCell.piece = cell.piece;
       //swap the pieces if this is a castling move
+      //and check that the king can't be hit on the way
       if(castling!==false && newCell.y ===castling &&
          (newCell.x === 0 || newCell.x === 7) &&
-         piece.type === 'k')
-        {cell.piece = swap;}
-      else
+         piece.type === 'k') {
+        var side = newCell.x === 0?-1:1,
+            rookOverOne = grid[newCell.x-side][newCell.y];
+        //make sure king can't be hit on the way
+        //simulate 1/2 of castling
+          grid[x+side][y].piece = cell.piece;
+          cell.piece = null;
+          rookOverOne.piece = newCell.piece;
+          newCell.piece = null;
+          //see if the king is safe
+          if(!isKingSafe(this)) safety = false;
+          //reset the 1/2 move...
+          newCell.piece = rookOverOne.piece;
+          rookOverOne.piece = null;
+          cell.piece = grid[x+side][y].piece;
+          grid[x+side][y].piece = null;
+          //and do the regular move
+          newCell.piece = cell.piece;
+          cell.piece = swap;
+      }
+      else{
+        newCell.piece = cell.piece;
         cell.piece = null;
+      }
       //if the king isn't safe, set safety to false
       if(!isKingSafe(this)){
         safety = false;
@@ -498,7 +520,9 @@ function Game(){
       //if the king-side rook exists and is unmoved
       if(kingRow[7].piece && !kingRow[7].piece.moved &&
         //and both pieces inbetween are vacant
-        !kingRow[6].piece && !kingRow[5].piece){
+        !kingRow[6].piece && !kingRow[5].piece &&
+        //and the king has never been put into check
+        !game.checked[game.player?0:1]){
         //push the rook into possible moves
         result.push(kingRow[7]);
         castling = kingY;
@@ -631,12 +655,16 @@ function Game(){
         oneRowUp = game.grid[king.y+oppositeDirection];
     if(game.pieceExists(x+1,y+oppositeDirection) &&
        oneRowUp[king.x+1].piece.player !== player &&
-       oneRowUp[king.x+1].piece.type==='p')
+       oneRowUp[king.x+1].piece.type==='p'){
+        game.checked[player?0:1]= true;
         return false;
+    }
     if(game.pieceExists(x-1,y+oppositeDirection) &&
        oneRowUp[king.x-1].piece.player !== player &&
-       oneRowUp[king.x-1].piece.type==='p')
+       oneRowUp[king.x-1].piece.type==='p'){
+        game.checked[player?0:1]= true;
         return false;
+    }
     //check knights
       var twos = [2,-2],
           ones = [1,-1];
@@ -645,11 +673,11 @@ function Game(){
           if(game.pieceExists(x+twos[j],y+ones[i]) &&
              grid[y+ones[i]][x+twos[j]].piece.player!==player &&
              grid[y+ones[i]][x+twos[j]].piece.type === 'kn')
-                {return false;}
+                {game.checked[player?0:1]= true;return false;}
           if(game.pieceExists(x+ones[i], y+twos[j]) &&
              grid[y+twos[j]][x+ones[i]].piece.player!==player &&
              grid[y+twos[j]][x+ones[i]].piece.type === 'kn')
-                {return false;}
+                {game.checked[player?0:1]= true;return false;}
         }
       }
     //check rooks and rook-moving queen
@@ -664,7 +692,10 @@ function Game(){
           var rqPiece = curCell.piece,
               rqType = rqPiece.type;
           if(rqPiece.player !== player &&
-            (rqType === 'r' || rqType === 'q')){return false;}
+            (rqType === 'r' || rqType === 'q')){
+            game.checked[player?0:1]= true;
+            return false;
+          }
           else {break;}
         }
         direction[0] += directions[i][0];
@@ -682,7 +713,10 @@ function Game(){
           var bqPiece = curCell.piece,
               bqType = bqPiece.name.split('-')[1];
           if(bqPiece.player !== player &&
-            (bqType === 'b' || bqType === 'q')){return false;}
+            (bqType === 'b' || bqType === 'q')){
+            game.checked[player?0:1]= true;
+            return false;
+          }
           else {break;}
         }
         direction[0] += directions[i][0];
@@ -695,8 +729,10 @@ function Game(){
         if(!(i===0 && j===0)){
           var kPiece = game.pieceExists(x+j,y+i);
           if(kPiece && kPiece.type === 'k' &&
-             kPiece.player !== game.player)
+             kPiece.player !== game.player){
+            game.checked[player?0:1]= true;
             return false;
+          }
         }
       }
     }
